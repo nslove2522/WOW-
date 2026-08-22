@@ -19,6 +19,7 @@ import { brand } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 const links = [
+  { href: "/", label: "Home" },
   { href: "/tours", label: "Tours" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/portal", label: "Portal" },
