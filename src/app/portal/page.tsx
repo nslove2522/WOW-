@@ -149,6 +149,7 @@ function PortalBody() {
           <ProfileForm
             name={user.name}
             city={user.city}
+            state={user.state}
             phone={user.phone}
             onSave={saveProfile}
           />
@@ -161,16 +162,19 @@ function PortalBody() {
 function ProfileForm({
   name: initialName,
   city: initialCity,
+  state: initialState,
   phone: initialPhone,
   onSave,
 }: {
   name: string;
   city: string;
+  state: string;
   phone: string;
-  onSave: (patch: { name: string; city: string; phone: string }) => void;
+  onSave: (patch: { name: string; city: string; phone: string; state?: string }) => void;
 }) {
   const [name, setName] = useState(initialName);
   const [city, setCity] = useState(initialCity);
+  const [state, setState] = useState(initialState);
   const [phone, setPhone] = useState(initialPhone);
   const [saved, setSaved] = useState(false);
 
@@ -179,21 +183,25 @@ function ProfileForm({
       className="max-w-lg space-y-4"
       onSubmit={(event) => {
         event.preventDefault();
-        onSave({ name, city, phone });
+        onSave({ name, city, phone, state });
         setSaved(true);
       }}
     >
       <div className="space-y-2">
         <Label htmlFor="name">Name</Label>
-        <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+        <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="state">State</Label>
+        <Input id="state" required value={state} onChange={(e) => setState(e.target.value)} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="city">City</Label>
-        <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} />
+        <Input id="city" required value={city} onChange={(e) => setCity(e.target.value)} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="phone">Phone</Label>
-        <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        <Input id="phone" required value={phone} onChange={(e) => setPhone(e.target.value)} />
       </div>
       <p className="text-sm text-muted-foreground">Email cannot be changed in this demo.</p>
       <Button type="submit">Save profile</Button>

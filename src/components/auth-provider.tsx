@@ -46,12 +46,14 @@ type AuthContextValue = {
     name: string;
     email: string;
     password: string;
+    country: string;
+    state: string;
     city: string;
     phone: string;
   }) => void;
   signIn: (email: string, password: string) => void;
   signOut: () => void;
-  saveProfile: (patch: { name: string; city: string; phone: string }) => void;
+  saveProfile: (patch: { name: string; city: string; phone: string; state?: string }) => void;
   payForTour: (input: {
     tourSlug: string;
     tourTitle: string;

@@ -12,6 +12,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { brand } from "@/lib/brand";
+import {
+  COUNTRIES,
+  DEFAULT_COUNTRY_ISO,
+  digitRange,
+  formatInternational,
+  getCountry,
+  onlyDigits,
+  phoneLengthHint,
+  validateNationalNumber,
+} from "@/lib/regions";
+
+const fieldClass = "h-11 border-teal-800/20 bg-white/80";
+const selectClass =
+  "h-11 w-full rounded-lg border border-teal-800/20 bg-white/80 px-2.5 text-sm text-teal-950 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 function RegisterForm() {
   const router = useRouter();
@@ -21,10 +35,23 @@ function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [countryIso, setCountryIso] = useState(DEFAULT_COUNTRY_ISO);
+  const [stateName, setStateName] = useState("");
+  const [nationalPhone, setNationalPhone] = useState("");
+
+  const country = getCountry(countryIso) ?? COUNTRIES[0];
+  const { max: phoneMax } = digitRange(country);
+  const stateOptions = country.states;
 
   useEffect(() => {
     if (ready && user) router.replace(next);
   }, [ready, user, next, router]);
+
+  function onCountryChange(iso: string) {
+    setCountryIso(iso);
+    setStateName("");
+    setNationalPhone("");
+  }
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,30 +62,38 @@ function RegisterForm() {
     const email = String(data.get("email") ?? "").trim();
     const password = String(data.get("password") ?? "");
     const city = String(data.get("city") ?? "").trim();
-    const phone = String(data.get("phone") ?? "").trim();
     const confirmAge = data.get("confirmAge") === "on";
-    const confirmWomenOnly = data.get("confirmWomenOnly") === "on";
+    const digits = onlyDigits(nationalPhone);
 
-    if (!name || !email || !password || !city || !phone) {
-      setError("Fill every field so we can keep your bookings in one place.");
+    if (!name || !email || !password || !countryIso || !stateName.trim() || !city) {
+      setError("Every field is required.");
       return;
     }
     if (password.length < 8) {
       setError("Use at least 8 characters for your password.");
       return;
     }
-    if (!confirmAge) {
-      setError("You need to confirm you are 18 or older.");
+    const phoneError = validateNationalNumber(country, digits);
+    if (phoneError) {
+      setError(phoneError);
       return;
     }
-    if (!confirmWomenOnly) {
-      setError("These trips are for women traveling as themselves — please confirm.");
+    if (!confirmAge) {
+      setError("You need to confirm you are 18 or older.");
       return;
     }
 
     setPending(true);
     try {
-      register({ name, email, password, city, phone });
+      register({
+        name,
+        email,
+        password,
+        country: country.iso,
+        state: stateName.trim(),
+        city,
+        phone: formatInternational(country, digits),
+      });
       router.push(next);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not create your account.");
@@ -81,7 +116,7 @@ function RegisterForm() {
     <div className="relative isolate flex min-h-dvh items-center justify-center overflow-hidden px-4 py-10">
       <AuthBackdrop />
 
-      <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/45 bg-[color-mix(in_oklch,white_80%,oklch(0.93_0.05_165))] p-6 shadow-[0_24px_60px_rgba(12,70,55,0.28)] backdrop-blur-xl sm:p-8">
+      <div className="relative z-10 w-full max-w-xl rounded-2xl border border-white/45 bg-[color-mix(in_oklch,white_80%,oklch(0.93_0.05_165))] p-6 shadow-[0_24px_60px_rgba(12,70,55,0.28)] backdrop-blur-xl sm:p-8">
         <div className="flex flex-col items-center text-center">
           <BrandLogo size={140} highlight className="h-28 w-auto" />
           <p className="mt-2 text-xs uppercase tracking-[0.22em] text-teal-800/80">
@@ -95,6 +130,7 @@ function RegisterForm() {
         </div>
 
         <form onSubmit={onSubmit} className="mt-8 space-y-4">
+          <p className="text-xs text-teal-900/70">Every field is required.</p>
           <div className="space-y-2">
             <Label htmlFor="name" className="text-teal-950">
               Full name
@@ -105,7 +141,7 @@ function RegisterForm() {
               required
               autoComplete="name"
               placeholder="Your name"
-              className="h-11 border-teal-800/20 bg-white/80"
+              className={fieldClass}
             />
           </div>
           <div className="space-y-2">
@@ -119,7 +155,7 @@ function RegisterForm() {
               required
               autoComplete="email"
               placeholder="you@email.com"
-              className="h-11 border-teal-800/20 bg-white/80"
+              className={fieldClass}
             />
           </div>
           <div className="space-y-2">
@@ -135,7 +171,7 @@ function RegisterForm() {
                 required
                 autoComplete="new-password"
                 placeholder="At least 8 characters"
-                className="h-11 border-teal-800/20 bg-white/80 pr-10"
+                className={`${fieldClass} pr-10`}
               />
               <button
                 type="button"
@@ -149,48 +185,109 @@ function RegisterForm() {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="city" className="text-teal-950">
-                Home city
+              <Label htmlFor="country" className="text-teal-950">
+                Country
               </Label>
-              <Input
-                id="city"
-                name="city"
+              <select
+                id="country"
+                name="country"
                 required
-                autoComplete="address-level2"
-                placeholder="City"
-                className="h-11 border-teal-800/20 bg-white/80"
-              />
+                value={countryIso}
+                onChange={(event) => onCountryChange(event.target.value)}
+                className={selectClass}
+                autoComplete="country"
+              >
+                {COUNTRIES.map((entry) => (
+                  <option key={entry.iso} value={entry.iso}>
+                    {entry.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-teal-950">
-                Phone
+              <Label htmlFor="state" className="text-teal-950">
+                State
               </Label>
+              {stateOptions ? (
+                <select
+                  id="state"
+                  name="state"
+                  required
+                  value={stateName}
+                  onChange={(event) => setStateName(event.target.value)}
+                  className={selectClass}
+                  autoComplete="address-level1"
+                >
+                  <option value="">Select state</option>
+                  {stateOptions.map((entry) => (
+                    <option key={entry} value={entry}>
+                      {entry}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <Input
+                  id="state"
+                  name="state"
+                  required
+                  value={stateName}
+                  onChange={(event) => setStateName(event.target.value)}
+                  autoComplete="address-level1"
+                  placeholder="State or region"
+                  className={fieldClass}
+                />
+              )}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="city" className="text-teal-950">
+              Home city
+            </Label>
+            <Input
+              id="city"
+              name="city"
+              required
+              autoComplete="address-level2"
+              placeholder="City"
+              className={fieldClass}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-teal-950">
+              Phone
+            </Label>
+            <div className="flex gap-2">
+              <span className="flex h-11 shrink-0 items-center rounded-lg border border-teal-800/20 bg-white/80 px-3 text-sm font-medium text-teal-950">
+                +{country.dial}
+              </span>
               <Input
                 id="phone"
                 name="phone"
                 required
-                autoComplete="tel"
-                placeholder="Mobile number"
-                className="h-11 border-teal-800/20 bg-white/80"
+                inputMode="numeric"
+                autoComplete="tel-national"
+                placeholder={country.example}
+                value={nationalPhone}
+                maxLength={phoneMax}
+                onChange={(event) =>
+                  setNationalPhone(onlyDigits(event.target.value).slice(0, phoneMax))
+                }
+                className={fieldClass}
+                aria-describedby="phone-hint"
               />
             </div>
+            <p id="phone-hint" className="text-xs text-teal-900/65">
+              Enter the full {phoneLengthHint(country)}. Example: {country.example}
+            </p>
           </div>
           <label className="flex items-start gap-3 text-sm leading-6 text-teal-950/85">
             <input
               type="checkbox"
               name="confirmAge"
+              required
               className="mt-1 h-4 w-4 rounded border-teal-900/30 accent-teal-800"
             />
             I confirm I am 18 or older.
-          </label>
-          <label className="flex items-start gap-3 text-sm leading-6 text-teal-950/85">
-            <input
-              type="checkbox"
-              name="confirmWomenOnly"
-              className="mt-1 h-4 w-4 rounded border-teal-900/30 accent-teal-800"
-            />
-            I understand these trips are reserved for women traveling without a
-            companion, and I will travel as myself — not as a plus-one.
           </label>
 
           {error ? (

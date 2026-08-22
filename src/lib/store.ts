@@ -9,8 +9,10 @@ const demoUser: User = {
   name: "Aisha Rahman",
   email: "aisha@wingsofwomen.test",
   password: "wander2026",
+  country: "IN",
+  state: "Karnataka",
   city: "Bengaluru",
-  phone: "+91 90000 11223",
+  phone: "+91 9000011223",
   createdAt: "2026-04-12T10:00:00.000Z",
 };
 
@@ -52,6 +54,8 @@ export function toPublicUser(user: User): PublicUser {
     name: user.name,
     email: user.email,
     city: user.city,
+    country: user.country ?? "IN",
+    state: user.state ?? "",
     phone: user.phone,
     createdAt: user.createdAt,
   };
@@ -61,6 +65,8 @@ export function registerUser(input: {
   name: string;
   email: string;
   password: string;
+  country: string;
+  state: string;
   city: string;
   phone: string;
 }) {
@@ -74,6 +80,8 @@ export function registerUser(input: {
     name: input.name.trim(),
     email,
     password: input.password,
+    country: input.country,
+    state: input.state.trim(),
     city: input.city.trim(),
     phone: input.phone.trim(),
     createdAt: new Date().toISOString(),
@@ -110,7 +118,10 @@ export function getSessionUser(): PublicUser | null {
   return user ? toPublicUser(user) : null;
 }
 
-export function updateUser(userId: string, patch: Partial<Pick<User, "name" | "city" | "phone">>) {
+export function updateUser(
+  userId: string,
+  patch: Partial<Pick<User, "name" | "city" | "phone" | "state" | "country">>,
+) {
   const users = listUsers().map((user) =>
     user.id === userId ? { ...user, ...patch } : user,
   );
