@@ -65,7 +65,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
         <h1 className="font-heading text-3xl">Sign in to pay</h1>
         <p className="mt-3 text-muted-foreground">
-          Reservations sit on your Kindred Trails account so the host can see who is coming.
+          Reservations sit on your WOW account so the host can see who is coming.
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Button

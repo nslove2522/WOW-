@@ -1,11 +1,13 @@
 import Link from "next/link";
 
+import { brand } from "@/lib/brand";
+
 export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-border/80 bg-card">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm">
-          <p className="font-heading text-lg">Kindred Trails</p>
+          <p className="font-heading text-lg">{brand.full}</p>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Small-group trips for women traveling without a companion. Hosted routes,
             locked guest lists, and a portal for your bookings.

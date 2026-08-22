@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Outfit } from "next/font/google";
 
+import { brand } from "@/lib/brand";
 import { AuthProvider } from "@/components/auth-provider";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -19,11 +20,11 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "Kindred Trails — women-only group trips",
-    template: "%s · Kindred Trails",
+    default: brand.full,
+    template: `%s · ${brand.short}`,
   },
   description:
-    "Join small, hosted trips with other women you have not met yet. Register, browse tour details, and pay from your portal.",
+    "Wings of Women organizes small hosted trips for women traveling without a companion. Register, browse tour details, and pay from your portal.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -26,7 +26,7 @@ const steps = [
 export default function HowItWorksPage() {
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-16">
-      <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">Kindred Trails</p>
+      <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">WOW — Wings of Women</p>
       <h1 className="mt-2 font-heading text-4xl">How a trip is organized</h1>
       <p className="mt-4 text-lg leading-8 text-muted-foreground">
         The site is built for women who want a hosted group without recruiting

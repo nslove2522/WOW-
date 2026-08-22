@@ -33,7 +33,7 @@ function SignInForm() {
       <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">Account</p>
       <h1 className="mt-2 font-heading text-4xl">Sign in</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Demo traveler: <span className="font-medium text-foreground">aisha@kindredtrails.test</span>{" "}
+        Demo traveler: <span className="font-medium text-foreground">aisha@wingsofwomen.test</span>{" "}
         / <span className="font-medium text-foreground">wander2026</span>
       </p>
       <form onSubmit={onSubmit} className="mt-8 space-y-4">
@@ -70,7 +70,7 @@ function SignInForm() {
           variant="outline"
           className="w-full"
           onClick={() => {
-            setEmail("aisha@kindredtrails.test");
+            setEmail("aisha@wingsofwomen.test");
             setPassword("wander2026");
           }}
         >

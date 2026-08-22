@@ -1,13 +1,13 @@
 import type { Booking, PublicUser, User } from "@/lib/types";
 
-const USERS_KEY = "kindred.users";
-const SESSION_KEY = "kindred.session";
-const BOOKINGS_KEY = "kindred.bookings";
+const USERS_KEY = "wow.users";
+const SESSION_KEY = "wow.session";
+const BOOKINGS_KEY = "wow.bookings";
 
 const demoUser: User = {
   id: "user_demo",
   name: "Aisha Rahman",
-  email: "aisha@kindredtrails.test",
+  email: "aisha@wingsofwomen.test",
   password: "wander2026",
   city: "Bengaluru",
   phone: "+91 90000 11223",
@@ -16,7 +16,7 @@ const demoUser: User = {
 
 function emitStoreChange() {
   if (typeof window === "undefined") return;
-  window.dispatchEvent(new Event("kindred-store"));
+  window.dispatchEvent(new Event("wow-store"));
 }
 
 function readJson<T>(key: string, fallback: T): T {
@@ -122,10 +122,10 @@ export function updateUser(userId: string, patch: Partial<Pick<User, "name" | "c
 }
 
 export function subscribeStore(onStoreChange: () => void) {
-  window.addEventListener("kindred-store", onStoreChange);
+  window.addEventListener("wow-store", onStoreChange);
   window.addEventListener("storage", onStoreChange);
   return () => {
-    window.removeEventListener("kindred-store", onStoreChange);
+    window.removeEventListener("wow-store", onStoreChange);
     window.removeEventListener("storage", onStoreChange);
   };
 }
@@ -139,7 +139,7 @@ export function listBookings(userId: string) {
 export function createBooking(booking: Omit<Booking, "id" | "paidAt" | "status">) {
   const full: Booking = {
     ...booking,
-    id: `KT-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
+    id: `WOW-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
     paidAt: new Date().toISOString(),
     status: "confirmed",
   };

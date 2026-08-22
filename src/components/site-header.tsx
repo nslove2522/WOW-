@@ -14,6 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { brand } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -72,11 +73,16 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-            KT
+        <Link href="/" className="flex items-center gap-2.5">
+          <span className="grid size-9 place-items-center rounded-full bg-primary text-[10px] font-semibold tracking-wide text-primary-foreground">
+            {brand.short}
           </span>
-          <span className="font-heading text-lg tracking-tight">Kindred Trails</span>
+          <span className="leading-tight">
+            <span className="block font-heading text-lg tracking-tight">{brand.short}</span>
+            <span className="block text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+              {brand.name}
+            </span>
+          </span>
         </Link>
         <div className="hidden items-center gap-8 md:flex">
           {nav}
@@ -92,7 +98,7 @@ export function SiteHeader() {
           </SheetTrigger>
           <SheetContent side="right" className="w-72">
             <SheetHeader>
-              <SheetTitle>Kindred Trails</SheetTitle>
+              <SheetTitle>{brand.full}</SheetTitle>
             </SheetHeader>
             <div className="flex flex-col gap-6 px-4">
               {nav}

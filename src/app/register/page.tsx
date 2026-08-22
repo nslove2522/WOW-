@@ -47,7 +47,7 @@ function RegisterForm() {
       <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">Account</p>
       <h1 className="mt-2 font-heading text-4xl">Register</h1>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        Kindred Trails is a women-only trip club. Your account is the portal for
+        WOW — Wings of Women is a women-only trip club. Your account is the portal for
         bookings, host messages, and payment receipts.
       </p>
       <form onSubmit={onSubmit} className="mt-8 space-y-4">

@@ -22,13 +22,13 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/35 to-black/20" />
         <div className="relative mx-auto flex min-h-[70vh] w-full max-w-6xl flex-col justify-end px-4 py-16 text-white">
           <p className="text-sm uppercase tracking-[0.2em] text-white/80">
-            Women-only group trips
+            WOW — Wings of Women
           </p>
           <h1 className="mt-3 max-w-2xl font-heading text-4xl leading-tight sm:text-6xl">
             Travel with women you have not met yet — on purpose.
           </h1>
           <p className="mt-4 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
-            Kindred Trails organizes small hosted trips for women traveling
+            Wings of Women organizes small hosted trips for women traveling
             without a companion. You get a locked guest list, a local host, and
             a portal for bookings and payment.
           </p>
