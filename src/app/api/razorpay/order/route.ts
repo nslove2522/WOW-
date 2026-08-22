@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { brand } from "@/lib/brand";
 import {
   amountToPaise,
-  getRazorpayClient,
+  createRazorpayOrder,
   isRazorpayConfigured,
   razorpayErrorMessage,
   razorpayKeyId,
@@ -44,10 +44,8 @@ export async function POST(request: Request) {
   const receipt = `wow_${Date.now().toString(36)}`.slice(0, 40);
 
   try {
-    const razorpay = getRazorpayClient();
-    const order = await razorpay.orders.create({
-      amount: amountPaise,
-      currency: "INR",
+    const order = await createRazorpayOrder({
+      amountPaise,
       receipt,
       notes: {
         tour_slug: tour.slug,

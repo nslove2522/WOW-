@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
 import {
-  getRazorpayClient,
+  fetchRazorpayOrder,
+  fetchRazorpayPayment,
   isRazorpayConfigured,
   orderTicketMatches,
   paiseToRupees,
@@ -67,10 +68,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const razorpay = getRazorpayClient();
     const [order, payment] = await Promise.all([
-      razorpay.orders.fetch(orderId),
-      razorpay.payments.fetch(paymentId),
+      fetchRazorpayOrder(orderId),
+      fetchRazorpayPayment(paymentId),
     ]);
 
     if (String(payment.order_id) !== String(order.id)) {

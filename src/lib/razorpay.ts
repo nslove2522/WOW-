@@ -1,43 +1,6 @@
 import crypto from "node:crypto";
-import { createRequire } from "node:module";
-import path from "node:path";
 
 import type { PaymentMode } from "@/lib/types";
-
-type RazorpayClient = {
-  orders: {
-    create: (payload: {
-      amount: number;
-      currency: string;
-      receipt: string;
-      notes?: Record<string, string>;
-    }) => Promise<{ id: string; amount: number | string; currency: string }>;
-    fetch: (id: string) => Promise<{
-      id: string;
-      amount: number | string;
-      currency: string;
-      notes?: Record<string, string> | null;
-    }>;
-  };
-  payments: {
-    fetch: (id: string) => Promise<{
-      id: string;
-      order_id: string;
-      amount: number | string;
-      status: string;
-      method?: string;
-    }>;
-  };
-};
-
-type RazorpayCtor = new (options: { key_id: string; key_secret: string }) => RazorpayClient;
-
-function loadRazorpayCtor(): RazorpayCtor {
-  const require = createRequire(path.join(process.cwd(), "package.json"));
-  const mod = require("razorpay") as RazorpayCtor | { default: RazorpayCtor };
-  if (typeof mod === "function") return mod;
-  return mod.default;
-}
 
 function cleanEnv(value: string | undefined) {
   return value?.trim().replace(/^["']|["']$/g, "") ?? "";
@@ -57,15 +20,65 @@ export function isRazorpayConfigured() {
   return Boolean(id && secret && id.startsWith("rzp_"));
 }
 
-export function getRazorpayClient() {
+type RazorpayErrorBody = {
+  error?: { description?: string; reason?: string };
+};
+
+async function razorpayRequest<T>(path: string, init?: RequestInit): Promise<T> {
   if (!isRazorpayConfigured()) {
     throw new Error("Razorpay keys are not set. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.");
   }
-  const Razorpay = loadRazorpayCtor();
-  return new Razorpay({
-    key_id: razorpayKeyId(),
-    key_secret: razorpayKeySecret(),
+
+  const auth = Buffer.from(`${razorpayKeyId()}:${razorpayKeySecret()}`).toString("base64");
+  const response = await fetch(`https://api.razorpay.com/v1${path}`, {
+    ...init,
+    headers: {
+      Authorization: `Basic ${auth}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      ...(init?.headers ?? {}),
+    },
   });
+
+  const data = (await response.json()) as T & RazorpayErrorBody;
+  if (!response.ok) {
+    throw new Error(
+      data.error?.description || data.error?.reason || `Razorpay request failed (${response.status}).`,
+    );
+  }
+  return data;
+}
+
+export function createRazorpayOrder(input: {
+  amountPaise: number;
+  receipt: string;
+  notes: Record<string, string>;
+}) {
+  return razorpayRequest<{ id: string; amount: number | string; currency: string }>("/orders", {
+    method: "POST",
+    body: JSON.stringify({
+      amount: input.amountPaise,
+      currency: "INR",
+      receipt: input.receipt,
+      notes: input.notes,
+    }),
+  });
+}
+
+export function fetchRazorpayOrder(orderId: string) {
+  return razorpayRequest<{ id: string; amount: number | string; currency: string }>(
+    `/orders/${encodeURIComponent(orderId)}`,
+  );
+}
+
+export function fetchRazorpayPayment(paymentId: string) {
+  return razorpayRequest<{
+    id: string;
+    order_id: string;
+    amount: number | string;
+    status: string;
+    method?: string;
+  }>(`/payments/${encodeURIComponent(paymentId)}`);
 }
 
 export function amountToPaise(rupees: number) {
@@ -124,16 +137,5 @@ export function paymentMethodToMode(method: string | undefined): PaymentMode {
 
 export function razorpayErrorMessage(error: unknown) {
   if (error instanceof Error && error.message) return error.message;
-  if (typeof error === "object" && error) {
-    const record = error as {
-      error?: { description?: string; reason?: string };
-      description?: string;
-      message?: string;
-    };
-    if (record.error?.description) return record.error.description;
-    if (record.error?.reason) return record.error.reason;
-    if (typeof record.description === "string") return record.description;
-    if (typeof record.message === "string") return record.message;
-  }
   return "Razorpay request failed.";
 }
