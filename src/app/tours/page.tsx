@@ -11,10 +11,9 @@ export default function ToursPage() {
     <div className="mx-auto w-full max-w-6xl px-4 py-12">
       <BrandLogo size={96} highlight className="mb-4 h-20 w-auto" />
       <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">Catalog</p>
-      <h1 className="mt-2 font-heading text-4xl">Upcoming tours</h1>
+      <h1 className="mt-2 font-heading text-4xl">This season</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground">
-        Every departure is women-only, hosted, and capped. Open a tour for the
-        full itinerary, inclusions, and payment.
+        One women-only day trip. Open it for the plan, inclusions, and payment.
       </p>
       {tours.length === 0 ? (
         <p className="mt-12 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">

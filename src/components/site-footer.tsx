@@ -57,7 +57,7 @@ export function SiteFooter() {
           <div className="flex flex-col gap-2">
             <p className="font-medium text-foreground">Explore</p>
             <Link href="/tours" className="text-muted-foreground hover:underline">
-              Upcoming tours
+              Seetharkundu Falls
             </Link>
             <Link href="/how-it-works" className="text-muted-foreground hover:underline">
               How it works
