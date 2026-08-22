@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 
-import { BrandLogo } from "@/components/brand-logo";
 import { useAuth } from "@/components/auth-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,7 +37,6 @@ function PortalBody() {
   if (!user) {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
-        <BrandLogo size={140} highlight className="mx-auto mb-4 h-32 w-auto" />
         <h1 className="font-heading text-3xl">Sign in to your portal</h1>
         <p className="mt-3 text-muted-foreground">
           Bookings, receipts, and your traveler profile live here.
@@ -59,7 +57,6 @@ function PortalBody() {
     <div className="mx-auto w-full max-w-5xl px-4 py-12">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <BrandLogo size={72} className="mb-2 h-16 w-auto" />
           <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">Traveler portal</p>
           <h1 className="mt-1 font-heading text-4xl">Hello, {user.name.split(" ")[0]}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{user.email}</p>

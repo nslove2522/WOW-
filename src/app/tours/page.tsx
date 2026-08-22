@@ -1,4 +1,3 @@
-import { BrandLogo } from "@/components/brand-logo";
 import { TourCard } from "@/components/tour-card";
 import { tours } from "@/lib/tours";
 
@@ -9,7 +8,6 @@ export const metadata = {
 export default function ToursPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-12">
-      <BrandLogo size={96} highlight className="mb-4 h-20 w-auto" />
       <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">Catalog</p>
       <h1 className="mt-2 font-heading text-4xl">This season</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground">
@@ -21,7 +19,7 @@ export default function ToursPage() {
           opens.
         </p>
       ) : (
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid max-w-md gap-6 sm:max-w-lg">
           {tours.map((tour) => (
             <TourCard key={tour.slug} tour={tour} />
           ))}
