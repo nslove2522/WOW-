@@ -6,6 +6,7 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 
 import { useAuth } from "@/components/auth-provider";
+import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -97,9 +98,10 @@ export function SiteHeader() {
               <Menu className="size-4" />
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
-              <SheetHeader>
-                <SheetTitle>
-                  <span className="text-sm font-medium">{brand.full}</span>
+              <SheetHeader className="pr-10">
+                <SheetTitle className="flex items-center gap-3 text-left">
+                  <BrandLogo size={56} highlight className="h-12 w-auto" />
+                  <span className="text-sm font-medium leading-snug">{brand.full}</span>
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-6 px-4">
