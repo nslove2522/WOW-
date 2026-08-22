@@ -1,18 +1,55 @@
 import crypto from "node:crypto";
-import Razorpay from "razorpay";
+import { createRequire } from "node:module";
+import path from "node:path";
 
 import type { PaymentMode } from "@/lib/types";
 
+const require = createRequire(path.join(process.cwd(), "package.json"));
+const Razorpay = require("razorpay") as new (options: {
+  key_id: string;
+  key_secret: string;
+}) => {
+  orders: {
+    create: (payload: {
+      amount: number;
+      currency: string;
+      receipt: string;
+      notes?: Record<string, string>;
+    }) => Promise<{ id: string; amount: number | string; currency: string }>;
+    fetch: (id: string) => Promise<{
+      id: string;
+      amount: number | string;
+      currency: string;
+      notes?: Record<string, string> | null;
+    }>;
+  };
+  payments: {
+    fetch: (id: string) => Promise<{
+      id: string;
+      order_id: string;
+      amount: number | string;
+      status: string;
+      method?: string;
+    }>;
+  };
+};
+
+function cleanEnv(value: string | undefined) {
+  return value?.trim().replace(/^["']|["']$/g, "") ?? "";
+}
+
 export function razorpayKeyId() {
-  return process.env.RAZORPAY_KEY_ID?.trim() || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.trim() || "";
+  return cleanEnv(process.env.RAZORPAY_KEY_ID) || cleanEnv(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
 }
 
 export function razorpayKeySecret() {
-  return process.env.RAZORPAY_KEY_SECRET?.trim() || "";
+  return cleanEnv(process.env.RAZORPAY_KEY_SECRET);
 }
 
 export function isRazorpayConfigured() {
-  return Boolean(razorpayKeyId() && razorpayKeySecret());
+  const id = razorpayKeyId();
+  const secret = razorpayKeySecret();
+  return Boolean(id && secret && id.startsWith("rzp_"));
 }
 
 export function getRazorpayClient() {
@@ -31,6 +68,30 @@ export function amountToPaise(rupees: number) {
 
 export function paiseToRupees(paise: number) {
   return Math.round(paise / 100);
+}
+
+export function signOrderTicket(input: {
+  orderId: string;
+  slug: string;
+  seats: number;
+  amountPaise: number;
+}) {
+  const body = `${input.orderId}|${input.slug}|${input.seats}|${input.amountPaise}`;
+  return crypto.createHmac("sha256", razorpayKeySecret()).update(body).digest("hex");
+}
+
+export function orderTicketMatches(input: {
+  ticket: string;
+  orderId: string;
+  slug: string;
+  seats: number;
+  amountPaise: number;
+}) {
+  const expected = signOrderTicket(input);
+  const left = Buffer.from(expected, "hex");
+  const right = Buffer.from(input.ticket, "hex");
+  if (left.length !== right.length) return false;
+  return crypto.timingSafeEqual(left, right);
 }
 
 export function verifyCheckoutSignature(input: {
@@ -53,4 +114,20 @@ export function paymentMethodToMode(method: string | undefined): PaymentMode {
   if (method === "card") return "card";
   if (method === "upi") return "upi";
   return "razorpay";
+}
+
+export function razorpayErrorMessage(error: unknown) {
+  if (error instanceof Error && error.message) return error.message;
+  if (typeof error === "object" && error) {
+    const record = error as {
+      error?: { description?: string; reason?: string };
+      description?: string;
+      message?: string;
+    };
+    if (record.error?.description) return record.error.description;
+    if (record.error?.reason) return record.error.reason;
+    if (typeof record.description === "string") return record.description;
+    if (typeof record.message === "string") return record.message;
+  }
+  return "Razorpay request failed.";
 }

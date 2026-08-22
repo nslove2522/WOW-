@@ -5,7 +5,9 @@ import {
   amountToPaise,
   getRazorpayClient,
   isRazorpayConfigured,
+  razorpayErrorMessage,
   razorpayKeyId,
+  signOrderTicket,
 } from "@/lib/razorpay";
 import { getTour } from "@/lib/tours";
 
@@ -14,12 +16,15 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   if (!isRazorpayConfigured()) {
     return NextResponse.json(
-      { error: "Razorpay is not configured. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET." },
+      {
+        error:
+          "Razorpay keys are missing on this host. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to Vercel Production (and Preview), then redeploy.",
+      },
       { status: 503 },
     );
   }
 
-  let body: { slug?: string; seats?: number; userId?: string; preferredMethod?: string };
+  let body: { slug?: string; seats?: number };
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -35,34 +40,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Choose at least one traveler." }, { status: 400 });
   }
 
-  const amount = amountToPaise(tour.price * seats);
+  const amountPaise = amountToPaise(tour.price * seats);
   const receipt = `wow_${Date.now().toString(36)}`.slice(0, 40);
 
   try {
     const razorpay = getRazorpayClient();
     const order = await razorpay.orders.create({
-      amount,
+      amount: amountPaise,
       currency: "INR",
       receipt,
       notes: {
         tour_slug: tour.slug,
         seats: String(seats),
-        user_id: body.userId?.slice(0, 40) ?? "",
-        preferred_method: body.preferredMethod === "card" ? "card" : "upi",
       },
     });
 
+    const orderId = String(order.id);
     return NextResponse.json({
       keyId: razorpayKeyId(),
-      orderId: order.id,
-      amount: order.amount,
-      currency: order.currency,
+      orderId,
+      amount: amountPaise,
+      currency: "INR",
       name: brand.full,
       description: `${tour.title} · ${seats} traveler${seats > 1 ? "s" : ""}`,
-      image: "/wow-logo.png",
+      ticket: signOrderTicket({
+        orderId,
+        slug: tour.slug,
+        seats,
+        amountPaise,
+      }),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not create Razorpay order.";
-    return NextResponse.json({ error: message }, { status: 502 });
+    return NextResponse.json({ error: razorpayErrorMessage(error) }, { status: 502 });
   }
 }

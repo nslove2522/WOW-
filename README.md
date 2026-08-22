@@ -26,11 +26,18 @@ RAZORPAY_KEY_ID=rzp_test_xxxxxxxx
 RAZORPAY_KEY_SECRET=your-razorpay-key-secret
 ```
 
-On Vercel: Import this Git repo → Project Settings → Environment Variables → add the same names for Production (and Preview) → Deploy.
+On Vercel: Project → Settings → Environment Variables. Add **both** names for **Production and Preview** (not only Development):
 
-Use **test** keys while you try the flow. Switch to **live** keys (`rzp_live_…`) only on HTTPS. Live Checkout will not run on `http://localhost`.
+- `RAZORPAY_KEY_ID` — Key Id from Razorpay, for example `rzp_test_…` or `rzp_live_…`
+- `RAZORPAY_KEY_SECRET` — Key Secret from the same pair
+
+Paste the values with no quotes around them. Then **Redeploy** the latest production deployment so the new keys load. Checkout will not charge until those two are present.
+
+Use **test** keys while you try the ₹1 trip. Switch to **live** keys (`rzp_live_…`) only on HTTPS. Live Checkout will not run on `http://localhost`. Test and live keys cannot be mixed.
 
 Get keys from [Razorpay Dashboard → Account & Settings → API Keys](https://dashboard.razorpay.com/app/website-app-settings/api-keys). Never put `RAZORPAY_KEY_SECRET` in client code or `NEXT_PUBLIC_` variables.
+
+If the public site asks for Vercel login, turn off Deployment Protection for Production so Razorpay Checkout can be used by travelers.
 
 ### 3. Deploy
 

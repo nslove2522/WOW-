@@ -33,6 +33,7 @@ type OrderPayload = {
   currency: string;
   name: string;
   description: string;
+  ticket?: string;
   error?: string;
 };
 
@@ -153,16 +154,9 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
 
     try {
       if (!useRazorpay) {
-        const booking = await payForTour({
-          tourSlug: selected.slug,
-          tourTitle: selected.title,
-          travelDate: selected.nextDate,
-          seats,
-          amount: selected.price * seats,
-          paymentMode: mode,
-        });
-        router.push(`/portal?paid=${booking.id}`);
-        return;
+        throw new Error(
+          "Razorpay is not connected on this host. In Vercel → Project → Settings → Environment Variables, add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET for Production and Preview, then Redeploy. Use the Key Id and Key Secret from Razorpay Dashboard → API Keys (test keys start with rzp_test_, live with rzp_live_).",
+        );
       }
 
       const orderResponse = await fetch("/api/razorpay/order", {
@@ -171,12 +165,10 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
         body: JSON.stringify({
           slug: selected.slug,
           seats,
-          userId: traveler.id,
-          preferredMethod: mode,
         }),
       });
       const order = (await orderResponse.json()) as OrderPayload;
-      if (!orderResponse.ok || !order.orderId) {
+      if (!orderResponse.ok || !order.orderId || !order.ticket) {
         throw new Error(order.error || "Could not start Razorpay checkout.");
       }
 
@@ -185,27 +177,19 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
         throw new Error("Could not load Razorpay Checkout. Check your connection and try again.");
       }
 
-      openRazorpayCheckout({
+      openRazorpayCheckout(
+        {
         key: order.keyId,
         amount: Number(order.amount),
         currency: order.currency || "INR",
         name: order.name,
         description: order.description,
-        image: `${window.location.origin}/wow-logo.png`,
         order_id: order.orderId,
         prefill: {
           name: traveler.name,
           email: traveler.email,
-          contact: digitsForRazorpay(traveler.phone),
+          contact: digitsForRazorpay(traveler.phone) || undefined,
           method: mode,
-        },
-        method: {
-          card: true,
-          upi: true,
-          netbanking: false,
-          wallet: false,
-          emi: false,
-          paylater: false,
         },
         theme: { color: "#7a4a2b" },
         modal: {
@@ -217,7 +201,12 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
               const verifyResponse = await fetch("/api/razorpay/verify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(response),
+                body: JSON.stringify({
+                  ...response,
+                  ticket: order.ticket,
+                  slug: selected.slug,
+                  seats,
+                }),
               });
               const verified = (await verifyResponse.json()) as VerifyPayload;
               if (!verifyResponse.ok || !verified.ok || !verified.bookingId) {
@@ -234,12 +223,21 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
               });
               router.push(`/portal?paid=${booking.id}`);
             } catch (err) {
-              setError(err instanceof Error ? err.message : "Payment failed.");
+              setError(
+                err instanceof Error
+                  ? `${err.message} If Razorpay deducted money, keep the payment id and message us on WhatsApp.`
+                  : "Payment failed.",
+              );
               setPending(false);
             }
           })();
         },
-      });
+        },
+        (message) => {
+          setError(message);
+          setPending(false);
+        },
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Payment failed.");
       setPending(false);
@@ -256,8 +254,8 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
           <p className="mt-2 text-muted-foreground">
             Paying as {user.name}.{" "}
             {useRazorpay
-              ? "Card and UPI open in Razorpay Checkout. The booking is saved only after Razorpay confirms the payment."
-              : "Razorpay keys are not on this server yet, so this machine records a local demo receipt instead of charging."}
+              ? "Card and UPI open in Razorpay Checkout. Money is taken by Razorpay; the booking is saved after that payment is verified."
+              : "Razorpay is not connected yet. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET on Vercel (Production + Preview) and redeploy. Until then this page will not charge or confirm a trip."}
           </p>
         </div>
 
@@ -296,19 +294,19 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
           <Checkbox checked={agree} onCheckedChange={(value) => setAgree(Boolean(value))} />
           {useRazorpay
             ? `Pay ${formatPrice(total)} through Razorpay for this trip. You will complete card or UPI in the Razorpay window.`
-            : "I understand this checkout is a local demo until Razorpay keys are added. No money will be taken."}
+            : "Razorpay is not connected. Tick the box only after the keys are on the host."}
         </label>
 
         {error ? (
           <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
         ) : null}
 
-        <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
+        <Button type="submit" size="lg" disabled={pending || !useRazorpay} className="w-full sm:w-auto">
           {pending
-            ? useRazorpay
-              ? "Opening Razorpay…"
-              : "Processing…"
-            : `Pay ${formatPrice(total)}`}
+            ? "Opening Razorpay…"
+            : useRazorpay
+              ? `Pay ${formatPrice(total)}`
+              : "Razorpay not connected"}
         </Button>
       </form>
 
@@ -321,7 +319,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
         </p>
         <p className="mt-2 font-heading text-3xl">{formatPrice(total)}</p>
         <p className="mt-3 text-xs text-muted-foreground">
-          {useRazorpay ? "Charged by Razorpay in INR." : "Demo total — Razorpay not configured."}
+          {useRazorpay ? "Charged by Razorpay in INR." : "Connect Razorpay keys on the host to charge."}
         </p>
       </aside>
     </div>

@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 import {
   getRazorpayClient,
   isRazorpayConfigured,
+  orderTicketMatches,
   paiseToRupees,
   paymentMethodToMode,
+  razorpayErrorMessage,
   verifyCheckoutSignature,
 } from "@/lib/razorpay";
 import { getTour } from "@/lib/tours";
@@ -15,6 +17,9 @@ type VerifyBody = {
   razorpay_order_id?: string;
   razorpay_payment_id?: string;
   razorpay_signature?: string;
+  ticket?: string;
+  slug?: string;
+  seats?: number;
 };
 
 export async function POST(request: Request) {
@@ -32,8 +37,29 @@ export async function POST(request: Request) {
   const orderId = body.razorpay_order_id?.trim() ?? "";
   const paymentId = body.razorpay_payment_id?.trim() ?? "";
   const signature = body.razorpay_signature?.trim() ?? "";
-  if (!orderId || !paymentId || !signature) {
+  const ticket = body.ticket?.trim() ?? "";
+  const slug = body.slug?.trim() ?? "";
+  const seats = Number(body.seats);
+  if (!orderId || !paymentId || !signature || !ticket || !slug) {
     return NextResponse.json({ error: "Missing Razorpay payment fields." }, { status: 400 });
+  }
+
+  const tour = getTour(slug);
+  if (!tour || !Number.isInteger(seats) || seats < 1) {
+    return NextResponse.json({ error: "Trip details for this payment are invalid." }, { status: 400 });
+  }
+
+  const amountPaise = tour.price * seats * 100;
+  if (
+    !orderTicketMatches({
+      ticket,
+      orderId,
+      slug,
+      seats,
+      amountPaise,
+    })
+  ) {
+    return NextResponse.json({ error: "Payment ticket did not match this order." }, { status: 400 });
   }
 
   if (!verifyCheckoutSignature({ orderId, paymentId, signature })) {
@@ -47,7 +73,7 @@ export async function POST(request: Request) {
       razorpay.payments.fetch(paymentId),
     ]);
 
-    if (payment.order_id !== order.id) {
+    if (String(payment.order_id) !== String(order.id)) {
       return NextResponse.json({ error: "Payment does not belong to this order." }, { status: 400 });
     }
 
@@ -56,16 +82,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: `Payment is ${status}, not complete.` }, { status: 400 });
     }
 
-    const notes = (order.notes ?? {}) as Record<string, string>;
-    const slug = notes.tour_slug;
-    const seats = Number(notes.seats);
-    const tour = slug ? getTour(slug) : undefined;
-    if (!tour || !Number.isInteger(seats) || seats < 1) {
-      return NextResponse.json({ error: "Order notes are incomplete." }, { status: 400 });
-    }
-
-    const expectedPaise = tour.price * seats * 100;
-    if (Number(order.amount) !== expectedPaise || Number(payment.amount) !== expectedPaise) {
+    if (Number(order.amount) !== amountPaise || Number(payment.amount) !== amountPaise) {
       return NextResponse.json({ error: "Paid amount does not match the trip price." }, { status: 400 });
     }
 
@@ -76,11 +93,10 @@ export async function POST(request: Request) {
       tourTitle: tour.title,
       travelDate: tour.nextDate,
       seats,
-      amount: paiseToRupees(expectedPaise),
-      paymentMode: paymentMethodToMode(String(payment.method)),
+      amount: paiseToRupees(amountPaise),
+      paymentMode: paymentMethodToMode(payment.method),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Could not confirm payment.";
-    return NextResponse.json({ error: message }, { status: 502 });
+    return NextResponse.json({ error: razorpayErrorMessage(error) }, { status: 502 });
   }
 }

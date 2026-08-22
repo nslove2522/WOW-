@@ -33,6 +33,7 @@ export type RazorpayCheckoutResponse = {
 
 type RazorpayCheckoutInstance = {
   open: () => void;
+  on: (event: "payment.failed", handler: (response: { error?: { description?: string; reason?: string } }) => void) => void;
 };
 
 export function loadRazorpayCheckout() {
@@ -54,11 +55,19 @@ export function loadRazorpayCheckout() {
   });
 }
 
-export function openRazorpayCheckout(options: RazorpayCheckoutOptions) {
+export function openRazorpayCheckout(
+  options: RazorpayCheckoutOptions,
+  onFailed?: (message: string) => void,
+) {
   if (!window.Razorpay) {
     throw new Error("Razorpay Checkout did not load.");
   }
   const checkout = new window.Razorpay(options);
+  checkout.on("payment.failed", (response) => {
+    const message =
+      response.error?.description || response.error?.reason || "Razorpay could not complete the payment.";
+    onFailed?.(message);
+  });
   checkout.open();
 }
 
