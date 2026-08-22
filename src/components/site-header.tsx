@@ -73,9 +73,9 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 overflow-visible border-b border-border/80 bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-[6.5rem] w-full max-w-6xl items-center justify-between px-4">
+      <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4">
         <Link href="/" className="relative z-10 flex items-center bg-transparent" aria-label={brand.full}>
-          <BrandLogo size={200} priority highlight className="h-[6.25rem] w-auto" />
+          <BrandLogo size={140} priority highlight className="h-[4.5rem] w-auto" />
           <span className="sr-only">{brand.full}</span>
         </Link>
         <div className="hidden items-center gap-8 md:flex">
