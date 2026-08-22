@@ -56,44 +56,51 @@ function SignInForm() {
   return (
     <div className="relative isolate flex min-h-[calc(100dvh-5rem)] items-center justify-center overflow-hidden px-4 py-10">
       <Image
-        src="/gallery/lookout.jpg"
+        src="/gallery/coast.jpg"
         alt=""
         fill
         priority
-        className="object-cover scale-110 blur-md"
+        className="object-cover scale-110 blur-lg"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-primary/35" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/55" />
+      <div className="absolute inset-0 bg-gradient-to-br from-sky-700/45 via-emerald-700/35 to-teal-900/50" />
+      <div className="absolute inset-0 bg-gradient-to-t from-teal-950/40 via-transparent to-sky-200/20" />
 
-      <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/25 bg-background/85 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+      <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/40 bg-[color-mix(in_oklch,white_78%,oklch(0.92_0.04_180))] p-6 shadow-[0_24px_60px_rgba(12,60,70,0.28)] backdrop-blur-xl sm:p-8">
         <div className="flex justify-center">
           <BrandLogo size={140} highlight className="h-28 w-auto" />
         </div>
-        <p className="mt-2 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="mt-2 text-center text-xs uppercase tracking-[0.2em] text-teal-800/80">
           {brand.tagline}
         </p>
-        <h1 className="mt-3 text-center font-heading text-4xl">Welcome back</h1>
-        <p className="mt-2 text-center text-sm leading-6 text-muted-foreground">
-          Sign in to your WOW traveler portal to see tours, bookings, and payment.
+        <h1 className="mt-3 text-center font-heading text-4xl text-teal-950">
+          Start in the open air
+        </h1>
+        <p className="mt-2 text-center text-sm leading-6 text-teal-900/70">
+          Sign in to your WOW traveler portal. Sea air, mountain green, and your
+          next trip in one place.
         </p>
 
         <form onSubmit={onSubmit} className="mt-8 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-teal-950">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
               autoComplete="email"
               required
               placeholder="you@email.com"
-              className="h-11 bg-background/80"
+              className="h-11 border-teal-800/20 bg-white/80"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-teal-950">
+              Password
+            </Label>
             <div className="relative">
               <Input
                 id="password"
@@ -101,13 +108,13 @@ function SignInForm() {
                 autoComplete="current-password"
                 required
                 placeholder="Your password"
-                className="h-11 bg-background/80 pr-10"
+                className="h-11 border-teal-800/20 bg-white/80 pr-10"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
               <button
                 type="button"
-                className="absolute top-1/2 right-2.5 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute top-1/2 right-2.5 -translate-y-1/2 text-teal-800/70 hover:text-teal-950"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 onClick={() => setShowPassword((open) => !open)}
               >
@@ -125,13 +132,18 @@ function SignInForm() {
             </p>
           ) : null}
 
-          <Button type="submit" className="w-full" size="lg" disabled={pending}>
+          <Button
+            type="submit"
+            className="w-full bg-teal-800 text-white hover:bg-teal-700"
+            size="lg"
+            disabled={pending}
+          >
             {pending ? "Signing in…" : "Sign in"}
           </Button>
           <Button
             type="button"
             variant="outline"
-            className="w-full"
+            className="w-full border-teal-800/25 bg-white/50 text-teal-950 hover:bg-white/80"
             disabled={pending}
             onClick={() => {
               setEmail("aisha@wingsofwomen.test");
@@ -143,16 +155,16 @@ function SignInForm() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-muted-foreground">
+        <p className="mt-6 text-center text-sm text-teal-900/70">
           New to {brand.short}?{" "}
           <Link
             href={`/register?next=${encodeURIComponent(next)}`}
-            className="font-medium text-primary underline-offset-4 hover:underline"
+            className="font-medium text-teal-800 underline-offset-4 hover:underline"
           >
             Create an account
           </Link>
         </p>
-        <p className="mt-4 rounded-lg bg-muted/70 px-3 py-2 text-center text-xs leading-5 text-muted-foreground">
+        <p className="mt-4 rounded-lg bg-sky-100/70 px-3 py-2 text-center text-xs leading-5 text-teal-900/70">
           Demo: aisha@wingsofwomen.test / wander2026
         </p>
       </div>
