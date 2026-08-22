@@ -48,7 +48,22 @@ export function SiteFooter() {
               />
               wings._ofwomen
             </a>
-            <p className="text-muted-foreground">More contact details will live here.</p>
+            <a
+              href={brand.whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 font-medium text-foreground hover:underline"
+              aria-label="WhatsApp 9489029797"
+            >
+              <img
+                src="/whatsapp.svg"
+                alt=""
+                width={22}
+                height={22}
+                className="size-[22px] shrink-0"
+              />
+              9489029797
+            </a>
           </div>
           <div className="flex max-w-48 flex-col gap-2 text-muted-foreground">
             <p>Payments are simulated in this demo.</p>
