@@ -9,6 +9,7 @@ export type Tour = {
   description: string;
   image: string;
   imageAlt: string;
+  gallery?: { src: string; alt: string }[];
   days: number;
   nights: number;
   price: number;
@@ -29,6 +30,58 @@ export type Tour = {
 };
 
 export const tours: Tour[] = [
+  {
+    slug: "seetharkundu-falls-kollengodu",
+    title: "Trip to Seetharkundu Falls, Kollengodu",
+    location: "Seetharkundu Falls, Kollengode, Palakkad, Kerala",
+    region: "India",
+    tagline: "A short Kerala weekend at the falls — forest water, wet stone, and a small women-only group.",
+    description:
+      "Three days around Seetharkundu Falls near Kollengode. You walk in with a local woman guide, spend time at the cascade and the pool below, and stay nearby as a locked women-only group. Days are unhurried: the river, the forest path, and dinner with the same faces.",
+    image: "/tours/seetharkundu-1.jpg",
+    imageAlt: "Seetharkundu Falls cascading into a forest river",
+    gallery: [
+      {
+        src: "/tours/seetharkundu-1.jpg",
+        alt: "Long-exposure river below Seetharkundu Falls",
+      },
+      {
+        src: "/tours/seetharkundu-2.jpg",
+        alt: "Forest pool and waterfall at Seetharkundu",
+      },
+    ],
+    days: 3,
+    nights: 2,
+    price: 18900,
+    currency: "INR",
+    difficulty: "Easy",
+    groupSize: 8,
+    seatsLeft: 6,
+    nextDate: "19 Sep 2026",
+    host: {
+      name: "Divya Nair",
+      years: 7,
+      bio: "Palakkad-based host. Walks this forest path with small women-only groups and keeps the pace slow.",
+    },
+    highlights: [
+      "Time at the cascade and the pool, not a checklist day",
+      "Local woman guide on the forest path",
+      "Women-only roster, capped at eight",
+      "Stay nearby so you are not rushing back to town",
+    ],
+    inclusions: [
+      "Two nights’ stay and meals",
+      "Local transport from Palakkad",
+      "Guide and host",
+      "Entry and trail support",
+    ],
+    exclusions: ["Train or flight to Palakkad", "Travel insurance", "Personal snacks on the trail"],
+    itinerary: [
+      { day: 1, title: "Arrive Kollengode", detail: "Meet the group, short briefing, easy evening walk." },
+      { day: 2, title: "Seetharkundu Falls", detail: "Forest path to the cascade and pool. Lunch by the water. Return before dark." },
+      { day: 3, title: "Depart", detail: "Breakfast and drop to Palakkad." },
+    ],
+  },
   {
     slug: "himalaya-sisterhood-trek",
     title: "Himalaya Sisterhood Trek",

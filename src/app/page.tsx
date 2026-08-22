@@ -1,16 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Compass, Lock, Users } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
-import { PhotoCarousel } from "@/components/photo-carousel";
-import { TourCard } from "@/components/tour-card";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/brand";
-import { tours } from "@/lib/tours";
+import { formatPrice, getTour } from "@/lib/tours";
 
 export default function HomePage() {
-  const featured = tours.slice(0, 3);
+  const trip = getTour("seetharkundu-falls-kollengodu");
+  const photos = trip?.gallery ?? [];
 
   return (
     <div>
@@ -48,9 +46,9 @@ export default function HomePage() {
               size="lg"
               className="bg-white text-foreground hover:bg-white/90"
               nativeButton={false}
-              render={<Link href="/tours" />}
+              render={<Link href="/tours/seetharkundu-falls-kollengodu" />}
             >
-              Browse tours
+              See this trip
             </Button>
             <Button
               size="lg"
@@ -65,52 +63,45 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-16 sm:grid-cols-3">
-        {[
-          {
-            icon: Users,
-            title: "Strangers, then a group",
-            body: "You book as yourself. The roster is women only, capped small, and shared a week before departure.",
-          },
-          {
-            icon: Compass,
-            title: "A host on the ground",
-            body: "Every tour has a named host who lives the route. They handle the first night, the hard logistics, and the quiet ones.",
-          },
-          {
-            icon: Lock,
-            title: "Pay in the portal",
-            body: "Card, UPI, net banking, or wallet — simulated here so you can walk the full booking path without a live gateway.",
-          },
-        ].map((item) => (
-          <div key={item.title} className="rounded-xl border border-border bg-card p-6">
-            <item.icon className="size-5 text-primary" />
-            <h2 className="mt-4 font-heading text-xl">{item.title}</h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.body}</p>
+      {trip ? (
+        <section className="mx-auto w-full max-w-6xl px-4 py-16">
+          <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
+            Departure this season
+          </p>
+          <h2 className="mt-2 font-heading text-3xl sm:text-4xl">{trip.title}</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+            {trip.location}. {trip.days} days · {formatPrice(trip.price)} per traveler.
+          </p>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {photos.map((photo) => (
+              <Link
+                key={photo.src}
+                href={`/tours/${trip.slug}`}
+                className="relative block aspect-[3/4] overflow-hidden rounded-2xl"
+              >
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </Link>
+            ))}
           </div>
-        ))}
-      </section>
-
-      <PhotoCarousel />
-
-      <section className="mx-auto w-full max-w-6xl px-4 pb-20">
-        <div className="mb-8 flex items-end justify-between gap-4">
-          <div>
-            <h2 className="font-heading text-3xl">Departures this season</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Six hosted routes. Seats are real in this demo — they do not refill after you pay.
-            </p>
-          </div>
-          <Button variant="outline" nativeButton={false} render={<Link href="/tours" />}>
-            All tours
+          <p className="mt-6 max-w-2xl text-base leading-7 text-muted-foreground">
+            {trip.description}
+          </p>
+          <Button
+            className="mt-6"
+            size="lg"
+            nativeButton={false}
+            render={<Link href={`/tours/${trip.slug}`} />}
+          >
+            Trip details
           </Button>
-        </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((tour) => (
-            <TourCard key={tour.slug} tour={tour} />
-          ))}
-        </div>
-      </section>
+        </section>
+      ) : null}
     </div>
   );
 }

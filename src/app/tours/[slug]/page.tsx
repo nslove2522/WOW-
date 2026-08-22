@@ -59,6 +59,22 @@ export default async function TourDetailPage({
         </div>
       </div>
 
+      {tour.gallery && tour.gallery.length > 0 ? (
+        <div className="mx-auto grid w-full max-w-6xl gap-3 px-4 pt-8 sm:grid-cols-2">
+          {tour.gallery.map((photo) => (
+            <div key={photo.src} className="relative aspect-[3/4] overflow-hidden rounded-2xl">
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+          ))}
+        </div>
+      ) : null}
+
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 lg:grid-cols-[1fr_320px]">
         <div className="space-y-10">
           <p className="text-lg leading-8 text-muted-foreground">{tour.description}</p>
