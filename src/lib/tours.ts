@@ -52,7 +52,7 @@ export const tours: Tour[] = [
     ],
     days: 1,
     nights: 0,
-    price: 2499,
+    price: 1,
     currency: "INR",
     difficulty: "Easy",
     groupSize: 12,
