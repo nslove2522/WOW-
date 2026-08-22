@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -72,17 +73,10 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="grid size-9 place-items-center rounded-full bg-primary text-[10px] font-semibold tracking-wide text-primary-foreground">
-            {brand.short}
-          </span>
-          <span className="leading-tight">
-            <span className="block font-heading text-lg tracking-tight">{brand.short}</span>
-            <span className="block text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-              {brand.name}
-            </span>
-          </span>
+      <div className="mx-auto flex h-[4.5rem] w-full max-w-6xl items-center justify-between px-4">
+        <Link href="/" className="flex items-center gap-3" aria-label={brand.full}>
+          <BrandLogo size={64} priority className="size-14" />
+          <span className="sr-only">{brand.full}</span>
         </Link>
         <div className="hidden items-center gap-8 md:flex">
           {nav}
@@ -98,7 +92,10 @@ export function SiteHeader() {
           </SheetTrigger>
           <SheetContent side="right" className="w-72">
             <SheetHeader>
-              <SheetTitle>{brand.full}</SheetTitle>
+              <SheetTitle className="flex items-center gap-2">
+                <BrandLogo size={48} className="size-12" />
+                <span className="sr-only">{brand.full}</span>
+              </SheetTitle>
             </SheetHeader>
             <div className="flex flex-col gap-6 px-4">
               {nav}

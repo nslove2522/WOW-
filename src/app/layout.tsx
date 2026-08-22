@@ -25,6 +25,10 @@ export const metadata: Metadata = {
   },
   description:
     "Wings of Women organizes small hosted trips for women traveling without a companion. Register, browse tour details, and pay from your portal.",
+  icons: {
+    icon: "/wow-logo.png",
+    apple: "/wow-logo.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

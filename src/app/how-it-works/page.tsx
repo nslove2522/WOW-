@@ -1,6 +1,8 @@
 import Link from "next/link";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
+import { brand } from "@/lib/brand";
 
 export const metadata = { title: "How it works" };
 
@@ -26,7 +28,10 @@ const steps = [
 export default function HowItWorksPage() {
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-16">
-      <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">WOW — Wings of Women</p>
+      <BrandLogo size={120} className="size-24" />
+      <p className="mt-4 text-sm uppercase tracking-[0.16em] text-muted-foreground">
+        {brand.tagline}
+      </p>
       <h1 className="mt-2 font-heading text-4xl">How a trip is organized</h1>
       <p className="mt-4 text-lg leading-8 text-muted-foreground">
         The site is built for women who want a hosted group without recruiting

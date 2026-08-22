@@ -2,8 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { Compass, Lock, Users } from "lucide-react";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { TourCard } from "@/components/tour-card";
 import { Button } from "@/components/ui/button";
+import { brand } from "@/lib/brand";
 import { tours } from "@/lib/tours";
 
 export default function HomePage() {
@@ -21,8 +23,11 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/35 to-black/20" />
         <div className="relative mx-auto flex min-h-[70vh] w-full max-w-6xl flex-col justify-end px-4 py-16 text-white">
+          <div className="mb-6">
+            <BrandLogo size={160} priority className="size-28 drop-shadow-lg sm:size-36" />
+          </div>
           <p className="text-sm uppercase tracking-[0.2em] text-white/80">
-            WOW — Wings of Women
+            {brand.tagline}
           </p>
           <h1 className="mt-3 max-w-2xl font-heading text-4xl leading-tight sm:text-6xl">
             Travel with women you have not met yet — on purpose.
