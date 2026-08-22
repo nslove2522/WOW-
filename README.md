@@ -8,7 +8,7 @@ This is a full working slice in the browser. Accounts and bookings are stored in
 
 ```bash
 npm install
-npm run dev -- --port 43147 --hostname 127.0.0.1
+npm run dev -- --port 43147 --hostname 0.0.0.0
 ```
 
 Open [http://127.0.0.1:43147](http://127.0.0.1:43147).
