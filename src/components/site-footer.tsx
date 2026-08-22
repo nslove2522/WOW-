@@ -36,10 +36,17 @@ export function SiteFooter() {
               href={brand.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground hover:underline"
+              className="inline-flex items-center gap-2 font-medium text-foreground hover:underline"
+              aria-label="WOW on Instagram"
             >
-              <InstagramMark />
-              Instagram {brand.instagramHandle}
+              <img
+                src="/instagram.svg"
+                alt=""
+                width={22}
+                height={22}
+                className="size-[22px] shrink-0"
+              />
+              wow
             </a>
             <p className="text-muted-foreground">More contact details will live here.</p>
           </div>
@@ -50,20 +57,5 @@ export function SiteFooter() {
         </div>
       </div>
     </footer>
-  );
-}
-
-function InstagramMark() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      className="size-4 shrink-0 fill-none stroke-current"
-      strokeWidth="1.8"
-    >
-      <rect x="3" y="3" width="18" height="18" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
-    </svg>
   );
 }

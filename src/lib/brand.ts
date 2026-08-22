@@ -5,5 +5,4 @@ export const brand = {
   tagline: "Escapes curated for women",
   motto: "Beyond the Ordinary",
   instagramUrl: "https://www.instagram.com/wings._ofwomen",
-  instagramHandle: "@wings._ofwomen",
 } as const;
