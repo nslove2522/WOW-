@@ -17,18 +17,17 @@ export function BrandLogo({
   highlight = true,
 }: BrandLogoProps) {
   return (
-    <span className="relative inline-flex shrink-0 items-center justify-center p-1">
+    <span
+      className={cn(
+        "relative inline-flex shrink-0 items-center justify-center bg-transparent",
+        highlight && "p-0.5",
+      )}
+    >
       {highlight ? (
-        <>
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-[-4%] rounded-full bg-[radial-gradient(circle,rgba(28,48,28,0.55)_0%,rgba(28,48,28,0.12)_55%,rgba(28,48,28,0)_72%)]"
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-[-10%] rounded-full bg-[radial-gradient(circle,rgba(201,162,39,0.35)_0%,rgba(201,162,39,0)_70%)] blur-[10px]"
-          />
-        </>
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-[-12%] rounded-full bg-[radial-gradient(circle,rgba(201,162,39,0.28)_0%,rgba(201,162,39,0)_68%)] blur-md"
+        />
       ) : null}
       <Image
         src="/wow-logo.png"
@@ -36,8 +35,9 @@ export function BrandLogo({
         width={size}
         height={size}
         priority={priority}
+        unoptimized
         className={cn(
-          "relative z-10 bg-transparent object-contain drop-shadow-[0_6px_18px_rgba(0,0,0,0.28)]",
+          "relative z-10 h-auto w-auto max-w-none bg-transparent object-contain",
           className,
         )}
       />

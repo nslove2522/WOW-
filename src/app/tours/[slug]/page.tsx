@@ -42,7 +42,7 @@ export default async function TourDetailPage({
         <div className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-6xl px-4 pb-8 text-white">
           <BrandLogo
             size={96}
-            className="mb-3 size-20 drop-shadow-[0_8px_18px_rgba(0,0,0,0.45)]"
+            className="mb-3 h-20 w-auto drop-shadow-[0_8px_18px_rgba(0,0,0,0.45)]"
           />
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary">{tour.region}</Badge>

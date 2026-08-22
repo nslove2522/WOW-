@@ -72,10 +72,10 @@ export function SiteHeader() {
   );
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-24 w-full max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-3" aria-label={brand.full}>
-          <BrandLogo size={88} priority highlight className="size-[5.5rem]" />
+    <header className="sticky top-0 z-40 overflow-visible border-b border-border/80 bg-background/90 backdrop-blur">
+      <div className="mx-auto flex h-[6.5rem] w-full max-w-6xl items-center justify-between px-4">
+        <Link href="/" className="relative z-10 flex items-center bg-transparent" aria-label={brand.full}>
+          <BrandLogo size={200} priority highlight className="h-[6.25rem] w-auto" />
           <span className="sr-only">{brand.full}</span>
         </Link>
         <div className="hidden items-center gap-8 md:flex">
@@ -93,7 +93,7 @@ export function SiteHeader() {
           <SheetContent side="right" className="w-72">
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2">
-                <BrandLogo size={72} highlight className="size-[4.5rem]" />
+                <BrandLogo size={160} highlight className="h-20 w-auto" />
                 <span className="sr-only">{brand.full}</span>
               </SheetTitle>
             </SheetHeader>

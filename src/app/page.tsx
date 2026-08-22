@@ -28,7 +28,7 @@ export default function HomePage() {
               size={240}
               priority
               highlight
-              className="size-40 drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)] sm:size-52 md:size-60"
+              className="h-40 w-auto drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)] sm:h-52 md:h-60"
             />
           </div>
           <p className="text-sm uppercase tracking-[0.2em] text-white/80">
