@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/brand";
 import { formatDuration, formatPrice, getTour } from "@/lib/tours";
@@ -20,7 +21,15 @@ export default function HomePage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-black/15" />
-        <div className="relative mx-auto flex min-h-dvh w-full max-w-6xl flex-col justify-end px-4 pb-16 pt-28 text-white">
+        <div className="relative mx-auto flex min-h-dvh w-full max-w-6xl flex-col justify-end px-4 pb-16 pt-24 text-white">
+          <div className="mb-6">
+            <BrandLogo
+              size={240}
+              priority
+              highlight
+              className="h-40 w-auto drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)] sm:h-52 md:h-60"
+            />
+          </div>
           <p className="text-sm uppercase tracking-[0.2em] text-white/80">
             {brand.tagline}
           </p>

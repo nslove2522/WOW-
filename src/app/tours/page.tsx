@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function ToursPage() {
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-24">
+    <div className="mx-auto w-full max-w-6xl px-4 py-12">
       <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">Catalog</p>
       <h1 className="mt-2 font-heading text-4xl">This season</h1>
       <p className="mt-3 max-w-2xl text-muted-foreground">

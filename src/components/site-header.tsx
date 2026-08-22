@@ -19,7 +19,6 @@ import { brand } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "/", label: "Home" },
   { href: "/tours", label: "Tours" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/portal", label: "Portal" },
@@ -29,8 +28,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const { user, ready, signOut } = useAuth();
   const [open, setOpen] = useState(false);
-  const overPhoto = pathname === "/" || pathname.startsWith("/tours/");
-  const showEmblem = pathname === "/" || pathname.startsWith("/tours");
+  const overPhoto = pathname === "/";
 
   const nav = (
     <nav className="flex flex-col gap-1">
@@ -80,27 +78,7 @@ export function SiteHeader() {
 
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
-      <div className="flex items-start justify-between gap-4 px-4 pt-3">
-        {showEmblem ? (
-          <Link
-            href="/"
-            className="pointer-events-auto"
-            aria-label={`${brand.full} home`}
-          >
-            <BrandLogo
-              size={88}
-              priority={overPhoto}
-              highlight
-              className={
-                overPhoto
-                  ? "h-16 w-auto drop-shadow-[0_8px_18px_rgba(0,0,0,0.4)] sm:h-[4.5rem]"
-                  : "h-16 w-auto sm:h-[4.5rem]"
-              }
-            />
-          </Link>
-        ) : (
-          <span />
-        )}
+      <div className="flex justify-end px-4 pt-4">
         <div className="pointer-events-auto">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
