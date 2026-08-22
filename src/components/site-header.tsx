@@ -93,7 +93,7 @@ export function SiteHeader() {
           <SheetContent side="right" className="w-72">
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2">
-                <BrandLogo size={160} highlight className="h-20 w-auto" />
+                <BrandLogo size={112} highlight className="h-14 w-auto" />
                 <span className="sr-only">{brand.full}</span>
               </SheetTitle>
             </SheetHeader>
