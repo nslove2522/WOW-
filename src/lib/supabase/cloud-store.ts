@@ -130,6 +130,13 @@ export function subscribeCloudAuth(onChange: () => void) {
   return () => data.subscription.unsubscribe();
 }
 
+function mapAuthError(message: string) {
+  if (/rate limit/i.test(message) && /email/i.test(message)) {
+    return "Too many confirmation emails were sent. Wait about an hour, or in Supabase go to Authentication → Providers → Email and turn off Confirm email, then try again. If this email already registered, use Sign in.";
+  }
+  return message;
+}
+
 export async function registerCloudUser(input: {
   name: string;
   email: string;
@@ -153,7 +160,7 @@ export async function registerCloudUser(input: {
       },
     },
   });
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(mapAuthError(error.message));
   if (!data.session || !data.user) {
     throw new Error(
       "Account created. Confirm your email from the message Supabase sent, then sign in.",
@@ -176,7 +183,7 @@ export async function signInCloud(email: string, password: string) {
     email: email.trim().toLowerCase(),
     password,
   });
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(mapAuthError(error.message));
 }
 
 export async function signOutCloud() {
