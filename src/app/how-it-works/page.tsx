@@ -28,7 +28,7 @@ const steps = [
 export default function HowItWorksPage() {
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-16">
-      <BrandLogo size={48} className="size-12" />
+      <BrandLogo size={180} highlight className="size-40" />
       <p className="mt-4 text-sm uppercase tracking-[0.16em] text-muted-foreground">
         {brand.tagline}
       </p>

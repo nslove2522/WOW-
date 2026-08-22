@@ -23,8 +23,13 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/35 to-black/20" />
         <div className="relative mx-auto flex min-h-[70vh] w-full max-w-6xl flex-col justify-end px-4 py-16 text-white">
-          <div className="mb-4">
-            <BrandLogo size={56} priority className="size-14 drop-shadow-md" />
+          <div className="mb-6">
+            <BrandLogo
+              size={240}
+              priority
+              highlight
+              className="size-40 sm:size-52 md:size-60"
+            />
           </div>
           <p className="text-sm uppercase tracking-[0.2em] text-white/80">
             {brand.tagline}
