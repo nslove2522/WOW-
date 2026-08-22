@@ -14,7 +14,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <section className="relative isolate min-h-[70vh] overflow-hidden">
+      <section className="relative isolate min-h-dvh overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?auto=format&fit=crop&w=2000&q=80"
           alt="Women walking along a sunlit canal"
@@ -23,7 +23,7 @@ export default function HomePage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/35 to-black/20" />
-        <div className="relative mx-auto flex min-h-[70vh] w-full max-w-6xl flex-col justify-end px-4 py-16 text-white">
+        <div className="relative mx-auto flex min-h-dvh w-full max-w-6xl flex-col justify-end px-4 pb-16 pt-24 text-white">
           <div className="mb-6">
             <BrandLogo
               size={240}

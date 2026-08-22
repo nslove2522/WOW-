@@ -28,6 +28,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const { user, ready, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const overlayHome = pathname === "/";
 
   const nav = (
     <nav className="flex flex-col gap-1 md:flex-row md:items-center md:gap-6">
@@ -71,8 +72,51 @@ export function SiteHeader() {
     <div className="h-8 w-28 animate-pulse rounded-md bg-muted" />
   );
 
+  const menu = (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger
+        render={
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Open menu"
+            className={
+              overlayHome
+                ? "border-white/55 bg-white/15 text-white shadow-sm backdrop-blur-sm hover:bg-white/25 hover:text-white"
+                : "md:hidden"
+            }
+          />
+        }
+      >
+        <Menu className="size-4" />
+      </SheetTrigger>
+      <SheetContent side="right" className="w-72">
+        <SheetHeader>
+          <SheetTitle className="flex items-center gap-2">
+            <BrandLogo size={112} highlight className="h-14 w-auto" />
+            <span className="sr-only">{brand.full}</span>
+          </SheetTitle>
+        </SheetHeader>
+        <div className="flex flex-col gap-6 px-4">
+          {nav}
+          {actions}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+
   if (pathname === "/register" || pathname === "/sign-in") {
     return null;
+  }
+
+  if (overlayHome) {
+    return (
+      <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
+        <div className="flex justify-end px-4 pt-4">
+          <div className="pointer-events-auto">{menu}</div>
+        </div>
+      </header>
+    );
   }
 
   return (
@@ -86,27 +130,7 @@ export function SiteHeader() {
           {nav}
           {actions}
         </div>
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger
-            render={
-              <Button variant="outline" size="icon" className="md:hidden" aria-label="Open menu" />
-            }
-          >
-            <Menu className="size-4" />
-          </SheetTrigger>
-          <SheetContent side="right" className="w-72">
-            <SheetHeader>
-              <SheetTitle className="flex items-center gap-2">
-                <BrandLogo size={112} highlight className="h-14 w-auto" />
-                <span className="sr-only">{brand.full}</span>
-              </SheetTitle>
-            </SheetHeader>
-            <div className="flex flex-col gap-6 px-4">
-              {nav}
-              {actions}
-            </div>
-          </SheetContent>
-        </Sheet>
+        {menu}
       </div>
     </header>
   );
