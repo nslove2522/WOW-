@@ -37,7 +37,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 font-medium text-foreground hover:underline"
-              aria-label="WOW on Instagram"
+              aria-label="wings._ofwomen on Instagram"
             >
               <img
                 src="/instagram.svg"
@@ -46,7 +46,7 @@ export function SiteFooter() {
                 height={22}
                 className="size-[22px] shrink-0"
               />
-              wow
+              wings._ofwomen
             </a>
             <p className="text-muted-foreground">More contact details will live here.</p>
           </div>
