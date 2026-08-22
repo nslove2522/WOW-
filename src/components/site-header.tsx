@@ -73,9 +73,9 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-[4.5rem] w-full max-w-6xl items-center justify-between px-4">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-3" aria-label={brand.full}>
-          <BrandLogo size={64} priority className="size-14" />
+          <BrandLogo size={40} priority className="size-10" />
           <span className="sr-only">{brand.full}</span>
         </Link>
         <div className="hidden items-center gap-8 md:flex">
@@ -93,7 +93,7 @@ export function SiteHeader() {
           <SheetContent side="right" className="w-72">
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2">
-                <BrandLogo size={48} className="size-12" />
+                <BrandLogo size={36} className="size-9" />
                 <span className="sr-only">{brand.full}</span>
               </SheetTitle>
             </SheetHeader>

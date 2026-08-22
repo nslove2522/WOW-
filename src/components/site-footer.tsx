@@ -8,7 +8,7 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-border/80 bg-card">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm">
-          <BrandLogo size={120} className="size-28" />
+          <BrandLogo size={48} className="size-12" />
           <p className="mt-3 text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">
             {brand.tagline}
           </p>
