@@ -1,11 +1,25 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { brand } from "@/lib/brand";
+import { cn } from "@/lib/utils";
 
 export function SiteFooter() {
+  const pathname = usePathname();
+  const authSurface = pathname === "/register" || pathname === "/sign-in";
+
   return (
-    <footer className="mt-auto border-t border-border/80 bg-card">
+    <footer
+      className={cn(
+        "relative z-10 mt-auto border-t",
+        authSurface
+          ? "border-white/25 bg-white/25 text-teal-950 backdrop-blur-md"
+          : "border-border/80 bg-card",
+      )}
+    >
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm">
           <BrandLogo size={112} highlight className="h-24 w-auto" />

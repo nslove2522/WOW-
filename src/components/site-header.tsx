@@ -72,13 +72,14 @@ export function SiteHeader() {
   );
 
   const hideHeaderEmblem = pathname === "/register";
+  const authSurface = pathname === "/register" || pathname === "/sign-in";
 
   return (
     <header
       className={cn(
         "sticky top-0 z-40 overflow-visible border-b backdrop-blur",
-        hideHeaderEmblem
-          ? "border-white/25 bg-sky-100/35 text-teal-950"
+        authSurface
+          ? "border-white/20 bg-white/20 text-teal-950"
           : "border-border/80 bg-background/90",
       )}
     >

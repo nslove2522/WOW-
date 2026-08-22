@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 
+import { AuthBackdrop } from "@/components/auth-backdrop";
 import { BrandLogo } from "@/components/brand-logo";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
@@ -68,24 +68,18 @@ function RegisterForm() {
 
   if (!ready || user) {
     return (
-      <div className="flex min-h-[calc(100dvh-5rem)] items-center justify-center px-4">
-        <p className="text-sm text-muted-foreground">Opening your portal…</p>
-      </div>
+      <>
+        <AuthBackdrop />
+        <div className="relative z-10 flex min-h-[calc(100dvh-5rem)] items-center justify-center px-4">
+          <p className="text-sm text-teal-950/80">Opening your portal…</p>
+        </div>
+      </>
     );
   }
 
   return (
     <div className="relative isolate flex min-h-[calc(100dvh-5rem)] items-center justify-center overflow-hidden px-4 py-10">
-      <Image
-        src="/gallery/trail.jpg"
-        alt=""
-        fill
-        priority
-        className="object-cover scale-110 blur-lg"
-        sizes="100vw"
-      />
-      <div className="absolute inset-0 bg-gradient-to-br from-sky-400/50 via-emerald-600/40 to-teal-900/45" />
-      <div className="absolute inset-0 bg-gradient-to-t from-teal-950/35 via-transparent to-sky-200/30" />
+      <AuthBackdrop />
 
       <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/45 bg-[color-mix(in_oklch,white_80%,oklch(0.93_0.05_165))] p-6 shadow-[0_24px_60px_rgba(12,70,55,0.28)] backdrop-blur-xl sm:p-8">
         <div className="flex flex-col items-center text-center">
