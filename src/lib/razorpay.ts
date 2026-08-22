@@ -4,11 +4,7 @@ import path from "node:path";
 
 import type { PaymentMode } from "@/lib/types";
 
-const require = createRequire(path.join(process.cwd(), "package.json"));
-const Razorpay = require("razorpay") as new (options: {
-  key_id: string;
-  key_secret: string;
-}) => {
+type RazorpayClient = {
   orders: {
     create: (payload: {
       amount: number;
@@ -34,6 +30,15 @@ const Razorpay = require("razorpay") as new (options: {
   };
 };
 
+type RazorpayCtor = new (options: { key_id: string; key_secret: string }) => RazorpayClient;
+
+function loadRazorpayCtor(): RazorpayCtor {
+  const require = createRequire(path.join(process.cwd(), "package.json"));
+  const mod = require("razorpay") as RazorpayCtor | { default: RazorpayCtor };
+  if (typeof mod === "function") return mod;
+  return mod.default;
+}
+
 function cleanEnv(value: string | undefined) {
   return value?.trim().replace(/^["']|["']$/g, "") ?? "";
 }
@@ -56,6 +61,7 @@ export function getRazorpayClient() {
   if (!isRazorpayConfigured()) {
     throw new Error("Razorpay keys are not set. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.");
   }
+  const Razorpay = loadRazorpayCtor();
   return new Razorpay({
     key_id: razorpayKeyId(),
     key_secret: razorpayKeySecret(),
