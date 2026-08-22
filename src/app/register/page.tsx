@@ -70,7 +70,7 @@ function RegisterForm() {
     return (
       <>
         <AuthBackdrop />
-        <div className="relative z-10 flex min-h-[calc(100dvh-5rem)] items-center justify-center px-4">
+        <div className="relative z-10 flex min-h-dvh items-center justify-center px-4">
           <p className="text-sm text-teal-950/80">Opening your portal…</p>
         </div>
       </>
@@ -78,7 +78,7 @@ function RegisterForm() {
   }
 
   return (
-    <div className="relative isolate flex min-h-[calc(100dvh-5rem)] items-center justify-center overflow-hidden px-4 py-10">
+    <div className="relative isolate flex min-h-dvh items-center justify-center overflow-hidden px-4 py-10">
       <AuthBackdrop />
 
       <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/45 bg-[color-mix(in_oklch,white_80%,oklch(0.93_0.05_165))] p-6 shadow-[0_24px_60px_rgba(12,70,55,0.28)] backdrop-blur-xl sm:p-8">
@@ -230,7 +230,7 @@ export default function RegisterPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[calc(100dvh-5rem)] items-center justify-center text-muted-foreground">
+        <div className="flex min-h-dvh items-center justify-center text-muted-foreground">
           Loading registration…
         </div>
       }

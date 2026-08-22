@@ -49,7 +49,7 @@ function SignInForm() {
     return (
       <>
         <AuthBackdrop />
-        <div className="relative z-10 flex min-h-[calc(100dvh-5rem)] items-center justify-center px-4">
+        <div className="relative z-10 flex min-h-dvh items-center justify-center px-4">
           <p className="text-sm text-teal-950/80">Opening your portal…</p>
         </div>
       </>
@@ -57,7 +57,7 @@ function SignInForm() {
   }
 
   return (
-    <div className="relative isolate flex min-h-[calc(100dvh-5rem)] items-center justify-center overflow-hidden px-4 py-10">
+    <div className="relative isolate flex min-h-dvh items-center justify-center overflow-hidden px-4 py-10">
       <AuthBackdrop />
 
       <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/40 bg-[color-mix(in_oklch,white_78%,oklch(0.92_0.04_180))] p-6 shadow-[0_24px_60px_rgba(12,60,70,0.28)] backdrop-blur-xl sm:p-8">
@@ -170,7 +170,7 @@ export default function SignInPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[calc(100dvh-5rem)] items-center justify-center text-muted-foreground">
+        <div className="flex min-h-dvh items-center justify-center text-muted-foreground">
           Loading sign in…
         </div>
       }
