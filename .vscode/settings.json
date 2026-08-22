@@ -1,0 +1,11 @@
+{
+  "remote.autoForwardPorts": true,
+  "remote.autoForwardPortsSource": "hybrid",
+  "remote.portsAttributes": {
+    "43147": {
+      "label": "WOW — Wings of Women",
+      "onAutoForward": "openBrowser",
+      "protocol": "http"
+    }
+  }
+}
