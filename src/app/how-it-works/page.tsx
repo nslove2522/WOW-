@@ -16,7 +16,7 @@ const steps = [
   },
   {
     title: "Pay",
-    body: "Choose card, UPI, net banking, or wallet. In this demo the charge is simulated and a receipt is written to your portal.",
+    body: "Choose card or UPI. In this demo the charge is simulated and a receipt is written to your portal.",
   },
   {
     title: "Travel with the group",

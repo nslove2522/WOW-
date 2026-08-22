@@ -18,8 +18,6 @@ import type { PaymentMode } from "@/lib/types";
 const modes: { id: PaymentMode; title: string; hint: string }[] = [
   { id: "card", title: "Credit / debit card", hint: "Visa, Mastercard, RuPay" },
   { id: "upi", title: "UPI", hint: "GPay, PhonePe, BHIM" },
-  { id: "netbanking", title: "Net banking", hint: "Major Indian banks" },
-  { id: "wallet", title: "Digital wallet", hint: "Paytm, Amazon Pay" },
 ];
 
 export default function PayPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -34,8 +32,6 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
   const [upiId, setUpiId] = useState("");
-  const [bank, setBank] = useState("HDFC Bank");
-  const [wallet, setWallet] = useState("Paytm");
   const [agree, setAgree] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -148,7 +144,6 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
             id="seats"
             type="number"
             min={1}
-            max={Math.min(3, tour.seatsLeft)}
             value={seats}
             onChange={(event) => setSeats(Number(event.target.value))}
           />
@@ -230,24 +225,10 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
           </div>
         )}
 
-        {mode === "netbanking" && (
-          <div className="space-y-2">
-            <Label htmlFor="bank">Bank</Label>
-            <Input id="bank" value={bank} onChange={(e) => setBank(e.target.value)} />
-          </div>
-        )}
-
-        {mode === "wallet" && (
-          <div className="space-y-2">
-            <Label htmlFor="wallet">Wallet</Label>
-            <Input id="wallet" value={wallet} onChange={(e) => setWallet(e.target.value)} />
-          </div>
-        )}
-
         <label className="flex items-start gap-3 text-sm leading-6">
           <Checkbox checked={agree} onCheckedChange={(value) => setAgree(Boolean(value))} />
           I understand this checkout is a demo. No money will be taken from this
-          card, UPI ID, bank, or wallet.
+          card or UPI ID.
         </label>
 
         {error ? (
