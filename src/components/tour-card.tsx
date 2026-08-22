@@ -35,7 +35,7 @@ export function TourCard({ tour }: { tour: Tour }) {
           <div className="flex items-center justify-between border-t border-border pt-3 text-sm">
             <span className="flex items-center gap-1.5 text-muted-foreground">
               <Users className="size-3.5" />
-              {tour.days} days · {tour.difficulty}
+              {tour.days === 1 ? "1 day" : `${tour.days} days`} · {tour.difficulty}
             </span>
             <span className="font-medium">{formatPrice(tour.price)}</span>
           </div>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/brand";
-import { formatPrice, getTour } from "@/lib/tours";
+import { formatDuration, formatPrice, getTour } from "@/lib/tours";
 
 export default function HomePage() {
   const trip = getTour("seetharkundu-falls-kollengodu");
@@ -65,12 +65,21 @@ export default function HomePage() {
 
       {trip ? (
         <section className="mx-auto w-full max-w-6xl px-4 py-16">
-          <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
-            Departure this season
+          <p className="font-heading text-xl italic text-primary">Our next escape</p>
+          <p className="mt-2 text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Women only · One day trip · {trip.nextDate}
           </p>
-          <h2 className="mt-2 font-heading text-3xl sm:text-4xl">{trip.title}</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            {trip.location}. {trip.days} days · {formatPrice(trip.price)} per traveler.
+          <h2 className="mt-3 font-heading text-3xl leading-tight sm:text-5xl">
+            Seetharkundu Falls, Kollengodu
+          </h2>
+          <p className="mt-3 max-w-2xl text-lg leading-8">
+            Waterfalls, viewpoints & many more spots to cover.
+          </p>
+          <p className="mt-2 max-w-2xl font-heading text-xl text-primary">
+            {trip.tagline}
+          </p>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Come solo. Leave with stories, friendships & memories for life.
           </p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {photos.map((photo) => (
@@ -89,8 +98,41 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
-          <p className="mt-6 max-w-2xl text-base leading-7 text-muted-foreground">
-            {trip.description}
+          <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+            {trip.highlights.map((item) => (
+              <li
+                key={item}
+                className="rounded-xl bg-card px-4 py-3 text-sm leading-6 ring-1 ring-foreground/10"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-sm font-medium">Limited slots.</p>
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
+            {formatDuration(trip)} · {formatPrice(trip.price)} per traveler. Detailed
+            itinerary details will be shared personally.
+          </p>
+          <p className="mt-3 text-sm leading-6">
+            DM{" "}
+            <a
+              href={brand.instagramUrl}
+              className="font-medium underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @{brand.instagramHandle}
+            </a>{" "}
+            or WhatsApp{" "}
+            <a
+              href={brand.whatsappUrl}
+              className="font-medium underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {brand.whatsappNumber}
+            </a>
+            .
           </p>
           <Button
             className="mt-6"

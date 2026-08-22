@@ -35,9 +35,9 @@ export const tours: Tour[] = [
     title: "Trip to Seetharkundu Falls, Kollengodu",
     location: "Seetharkundu Falls, Kollengode, Palakkad, Kerala",
     region: "India",
-    tagline: "A short Kerala weekend at the falls — forest water, wet stone, and a small women-only group.",
+    tagline: "Women only. Strangers today, sisters forever.",
     description:
-      "Three days around Seetharkundu Falls near Kollengode. You walk in with a local woman guide, spend time at the cascade and the pool below, and stay nearby as a locked women-only group. Days are unhurried: the river, the forest path, and dinner with the same faces.",
+      "A one-day strangers trip for women. Come solo. Leave with stories, friendships, and memories for life. Waterfalls, viewpoints, and hidden gems around Seetharkundu Falls, Kollengodu — plus many more spots to cover. Detailed itinerary will be shared personally.",
     image: "/tours/seetharkundu-1.jpg",
     imageAlt: "Seetharkundu Falls cascading into a forest river",
     gallery: [
@@ -50,36 +50,41 @@ export const tours: Tour[] = [
         alt: "Forest pool and waterfall at Seetharkundu",
       },
     ],
-    days: 3,
-    nights: 2,
-    price: 18900,
+    days: 1,
+    nights: 0,
+    price: 2499,
     currency: "INR",
     difficulty: "Easy",
-    groupSize: 8,
-    seatsLeft: 6,
-    nextDate: "19 Sep 2026",
+    groupSize: 12,
+    seatsLeft: 8,
+    nextDate: "Saturday, 22 August 2026",
     host: {
-      name: "Divya Nair",
-      years: 7,
-      bio: "Palakkad-based host. Walks this forest path with small women-only groups and keeps the pace slow.",
+      name: "Wings of Women",
+      years: 1,
+      bio: "DM @wings._ofwomen or WhatsApp 9489029797. Limited slots. Itinerary details are shared personally.",
     },
     highlights: [
-      "Time at the cascade and the pool, not a checklist day",
-      "Local woman guide on the forest path",
-      "Women-only roster, capped at eight",
-      "Stay nearby so you are not rushing back to town",
+      "Breathtaking waterfalls",
+      "Scenic viewpoints",
+      "Hidden gems",
+      "New friends, unforgettable memories",
     ],
     inclusions: [
-      "Two nights’ stay and meals",
-      "Local transport from Palakkad",
-      "Guide and host",
-      "Entry and trail support",
+      "One-day hosted trip, women-only roster",
+      "Local host on the route",
+      "Stops at waterfalls, viewpoints, and hidden spots",
     ],
-    exclusions: ["Train or flight to Palakkad", "Travel insurance", "Personal snacks on the trail"],
+    exclusions: [
+      "Personal meals unless listed when we share the itinerary",
+      "Travel to the meeting point",
+    ],
     itinerary: [
-      { day: 1, title: "Arrive Kollengode", detail: "Meet the group, short briefing, easy evening walk." },
-      { day: 2, title: "Seetharkundu Falls", detail: "Forest path to the cascade and pool. Lunch by the water. Return before dark." },
-      { day: 3, title: "Depart", detail: "Breakfast and drop to Palakkad." },
+      {
+        day: 1,
+        title: "Seetharkundu Falls, Kollengodu",
+        detail:
+          "One-day escape covering waterfalls, viewpoints, and more. The detailed hour-by-hour plan is shared personally after you book.",
+      },
     ],
   },
   {
@@ -373,6 +378,11 @@ export const tours: Tour[] = [
 
 export function getTour(slug: string) {
   return tours.find((tour) => tour.slug === slug);
+}
+
+export function formatDuration(tour: Tour) {
+  if (tour.days === 1) return "One day trip";
+  return `${tour.days} days / ${tour.nights} nights`;
 }
 
 export function formatPrice(amount: number) {

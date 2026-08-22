@@ -7,7 +7,8 @@ import { BrandLogo } from "@/components/brand-logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { formatPrice, getTour, tours } from "@/lib/tours";
+import { brand } from "@/lib/brand";
+import { formatDuration, formatPrice, getTour, tours } from "@/lib/tours";
 
 export function generateStaticParams() {
   return tours.map((tour) => ({ slug: tour.slug }));
@@ -48,7 +49,7 @@ export default async function TourDetailPage({
             <Badge variant="secondary">{tour.region}</Badge>
             <Badge>{tour.difficulty}</Badge>
             <Badge variant="outline" className="border-white/40 text-white">
-              {tour.seatsLeft} seats left
+              {tour.days === 1 ? "Limited slots" : `${tour.seatsLeft} seats left`}
             </Badge>
           </div>
           <h1 className="mt-3 font-heading text-4xl sm:text-5xl">{tour.title}</h1>
@@ -128,25 +129,48 @@ export default async function TourDetailPage({
             <p className="text-sm text-muted-foreground">{tour.host.years} years on this work</p>
             <p className="mt-3 text-sm leading-6">{tour.host.bio}</p>
           </section>
+          <p className="text-sm leading-6 text-muted-foreground">
+            DM{" "}
+            <a
+              href={brand.instagramUrl}
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @{brand.instagramHandle}
+            </a>{" "}
+            or WhatsApp{" "}
+            <a
+              href={brand.whatsappUrl}
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {brand.whatsappNumber}
+            </a>
+            . Detailed itinerary details will be shared personally.
+          </p>
         </div>
 
         <aside className="h-fit rounded-xl bg-card p-5 ring-1 ring-foreground/10 lg:sticky lg:top-24">
           <p className="text-sm text-muted-foreground">From</p>
           <p className="font-heading text-3xl">{formatPrice(tour.price)}</p>
-          <p className="text-sm text-muted-foreground">per traveler, shared room</p>
+          <p className="text-sm text-muted-foreground">
+            per traveler{tour.nights > 0 ? ", shared room" : ""}
+          </p>
           <Separator className="my-4" />
           <ul className="space-y-3 text-sm">
             <li className="flex gap-2">
               <Calendar className="mt-0.5 size-4 text-primary" />
-              Next departure {tour.nextDate}
+              {tour.nextDate}
             </li>
             <li className="flex gap-2">
               <Users className="mt-0.5 size-4 text-primary" />
-              {tour.days} days / {tour.nights} nights · max {tour.groupSize}
+              {formatDuration(tour)} · max {tour.groupSize}
             </li>
             <li className="flex gap-2">
               <Shield className="mt-0.5 size-4 text-primary" />
-              Women-only roster, named host
+              Women only. Strangers today, sisters forever.
             </li>
           </ul>
           <Button
