@@ -20,18 +20,40 @@ export function SiteFooter() {
           : "border-border/80 bg-card",
       )}
     >
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 md:flex-row md:items-start md:justify-between">
-        <div className="max-w-sm">
-          <BrandLogo size={112} highlight className="h-24 w-auto" />
-          <p className="mt-3 text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">
+      <div
+        className={cn(
+          "mx-auto w-full max-w-6xl px-4 py-10",
+          authSurface
+            ? "flex flex-col items-center text-center"
+            : "flex flex-col gap-10 md:flex-row md:items-start md:justify-between",
+        )}
+      >
+        <div className={cn(authSurface ? "flex max-w-xl flex-col items-center" : "max-w-sm")}>
+          <BrandLogo size={112} highlight className={authSurface ? "h-28 w-auto" : "h-24 w-auto"} />
+          <p
+            className={cn(
+              "mt-3 text-sm font-medium uppercase tracking-[0.14em]",
+              authSurface ? "text-teal-900/80" : "text-muted-foreground",
+            )}
+          >
             {brand.tagline}
           </p>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          <p
+            className={cn(
+              "mt-2 text-sm leading-6",
+              authSurface ? "max-w-md text-teal-950/80" : "text-muted-foreground",
+            )}
+          >
             Small-group trips for women traveling without a companion. Hosted routes,
             locked guest lists, and a portal for your bookings. {brand.motto}.
           </p>
         </div>
-        <div className="flex flex-wrap gap-12 text-sm">
+        <div
+          className={cn(
+            "flex flex-wrap gap-12 text-sm",
+            authSurface ? "mt-10 justify-center" : "",
+          )}
+        >
           <div className="flex flex-col gap-2">
             <p className="font-medium text-foreground">Explore</p>
             <Link href="/tours" className="text-muted-foreground hover:underline">
