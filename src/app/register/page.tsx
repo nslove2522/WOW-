@@ -40,7 +40,7 @@ function RegisterForm() {
   const [nationalPhone, setNationalPhone] = useState("");
 
   const country = getCountry(countryIso) ?? COUNTRIES[0];
-  const { max: phoneMax } = digitRange(country);
+  const { min: phoneMin, max: phoneMax } = digitRange(country);
   const stateOptions = country.states;
 
   useEffect(() => {
@@ -185,26 +185,6 @@ function RegisterForm() {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="country" className="text-teal-950">
-                Country
-              </Label>
-              <select
-                id="country"
-                name="country"
-                required
-                value={countryIso}
-                onChange={(event) => onCountryChange(event.target.value)}
-                className={selectClass}
-                autoComplete="country"
-              >
-                {COUNTRIES.map((entry) => (
-                  <option key={entry.iso} value={entry.iso}>
-                    {entry.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="state" className="text-teal-950">
                 State
               </Label>
@@ -238,28 +218,41 @@ function RegisterForm() {
                 />
               )}
             </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="city" className="text-teal-950">
-              Home city
-            </Label>
-            <Input
-              id="city"
-              name="city"
-              required
-              autoComplete="address-level2"
-              placeholder="City"
-              className={fieldClass}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="city" className="text-teal-950">
+                Home city
+              </Label>
+              <Input
+                id="city"
+                name="city"
+                required
+                autoComplete="address-level2"
+                placeholder="City"
+                className={fieldClass}
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="phone" className="text-teal-950">
               Phone
             </Label>
             <div className="flex gap-2">
-              <span className="flex h-11 shrink-0 items-center rounded-lg border border-teal-800/20 bg-white/80 px-3 text-sm font-medium text-teal-950">
-                +{country.dial}
-              </span>
+              <select
+                id="phone-country"
+                name="country"
+                required
+                value={countryIso}
+                onChange={(event) => onCountryChange(event.target.value)}
+                className={`${selectClass} w-[9.75rem] shrink-0 sm:w-[11.5rem]`}
+                aria-label="Country"
+                autoComplete="tel-country-code"
+              >
+                {COUNTRIES.map((entry) => (
+                  <option key={entry.iso} value={entry.iso}>
+                    +{entry.dial} {entry.name}
+                  </option>
+                ))}
+              </select>
               <Input
                 id="phone"
                 name="phone"
@@ -268,6 +261,7 @@ function RegisterForm() {
                 autoComplete="tel-national"
                 placeholder={country.example}
                 value={nationalPhone}
+                minLength={phoneMin}
                 maxLength={phoneMax}
                 onChange={(event) =>
                   setNationalPhone(onlyDigits(event.target.value).slice(0, phoneMax))
@@ -277,7 +271,8 @@ function RegisterForm() {
               />
             </div>
             <p id="phone-hint" className="text-xs text-teal-900/65">
-              Enter the full {phoneLengthHint(country)}. Example: {country.example}
+              Choose your country, then enter the full {phoneLengthHint(country)}. Example:{" "}
+              {country.example}
             </p>
           </div>
           <label className="flex items-start gap-3 text-sm leading-6 text-teal-950/85">
