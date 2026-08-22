@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 
-import { BrandLogo } from "@/components/brand-logo";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,15 +27,10 @@ export function SiteHeader() {
   const pathname = usePathname();
   const { user, ready, signOut } = useAuth();
   const [open, setOpen] = useState(false);
-  const overlayHome = pathname === "/";
-  const hideEmblem =
-    pathname === "/tours" ||
-    pathname.startsWith("/tours/") ||
-    pathname === "/how-it-works" ||
-    pathname === "/portal";
+  const overPhoto = pathname === "/";
 
   const nav = (
-    <nav className="flex flex-col gap-1 md:flex-row md:items-center md:gap-6">
+    <nav className="flex flex-col gap-1">
       {links.map((link) => (
         <Link
           key={link.href}
@@ -77,75 +71,44 @@ export function SiteHeader() {
     <div className="h-8 w-28 animate-pulse rounded-md bg-muted" />
   );
 
-  const menu = (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger
-        render={
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label="Open menu"
-            className={
-              overlayHome
-                ? "border-white/55 bg-white/15 text-white shadow-sm backdrop-blur-sm hover:bg-white/25 hover:text-white"
-                : "md:hidden"
-            }
-          />
-        }
-      >
-        <Menu className="size-4" />
-      </SheetTrigger>
-      <SheetContent side="right" className="w-72">
-            <SheetHeader>
-              <SheetTitle>
-                {hideEmblem ? (
-                  <span className="text-sm font-medium">{brand.full}</span>
-                ) : (
-                  <>
-                    <BrandLogo size={112} highlight className="h-14 w-auto" />
-                    <span className="sr-only">{brand.full}</span>
-                  </>
-                )}
-              </SheetTitle>
-            </SheetHeader>
-        <div className="flex flex-col gap-6 px-4">
-          {nav}
-          {actions}
-        </div>
-      </SheetContent>
-    </Sheet>
-  );
-
   if (pathname === "/register" || pathname === "/sign-in") {
     return null;
   }
 
-  if (overlayHome) {
-    return (
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
-        <div className="flex justify-end px-4 pt-4">
-          <div className="pointer-events-auto">{menu}</div>
-        </div>
-      </header>
-    );
-  }
-
   return (
-    <header className="sticky top-0 z-40 overflow-visible border-b border-border/80 bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4">
-        {hideEmblem ? (
-          <span className="w-10" aria-hidden />
-        ) : (
-          <Link href="/" className="relative z-10 flex items-center bg-transparent" aria-label={brand.full}>
-            <BrandLogo size={140} priority highlight className="h-[4.5rem] w-auto" />
-            <span className="sr-only">{brand.full}</span>
-          </Link>
-        )}
-        <div className="hidden items-center gap-8 md:flex">
-          {nav}
-          {actions}
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
+      <div className="flex justify-end px-4 pt-4">
+        <div className="pointer-events-auto">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger
+              render={
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label="Open menu"
+                  className={
+                    overPhoto
+                      ? "border-white/55 bg-white/15 text-white shadow-sm backdrop-blur-sm hover:bg-white/25 hover:text-white"
+                      : "border-border bg-background/85 shadow-sm backdrop-blur-sm"
+                  }
+                />
+              }
+            >
+              <Menu className="size-4" />
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72">
+              <SheetHeader>
+                <SheetTitle>
+                  <span className="text-sm font-medium">{brand.full}</span>
+                </SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-6 px-4">
+                {nav}
+                {actions}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
-        {menu}
       </div>
     </header>
   );
