@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Compass, Lock, Users } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
+import { PhotoCarousel } from "@/components/photo-carousel";
 import { TourCard } from "@/components/tour-card";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/brand";
@@ -89,6 +90,8 @@ export default function HomePage() {
           </div>
         ))}
       </section>
+
+      <PhotoCarousel />
 
       <section className="mx-auto w-full max-w-6xl px-4 pb-20">
         <div className="mb-8 flex items-end justify-between gap-4">
