@@ -29,7 +29,7 @@ export function PhotoCarousel() {
   const [index, setIndex] = useState(0);
 
   const go = useCallback((next: number) => {
-    setIndex((current) => (next + slides.length) % slides.length);
+    setIndex((next + slides.length) % slides.length);
   }, []);
 
   useEffect(() => {
