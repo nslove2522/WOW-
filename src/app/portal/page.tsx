@@ -68,7 +68,7 @@ function PortalBody() {
 
       {paid ? (
         <div className="mt-8 rounded-xl border border-primary/30 bg-primary/5 p-5">
-          <p className="text-sm font-medium text-primary">Payment received (demo)</p>
+          <p className="text-sm font-medium text-primary">Payment received</p>
           <p className="mt-1 text-sm leading-6">
             Booking {paid.id} is confirmed for {paid.tourTitle} on {paid.travelDate}. Receipt
             is in Trips below.

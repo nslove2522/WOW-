@@ -63,6 +63,7 @@ type AuthContextValue = {
     state?: string;
   }) => Promise<void>;
   payForTour: (input: {
+    id?: string;
     tourSlug: string;
     tourTitle: string;
     travelDate: string;

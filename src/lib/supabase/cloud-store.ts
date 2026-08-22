@@ -177,10 +177,21 @@ export async function listCloudBookings(): Promise<Booking[]> {
 }
 
 export async function createCloudBooking(
-  input: Omit<Booking, "id" | "paidAt" | "status">,
+  input: Omit<Booking, "id" | "paidAt" | "status"> & { id?: string },
 ): Promise<Booking> {
   const supabase = createSupabaseBrowserClient();
-  const id = `WOW-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+  const id = input.id ?? `WOW-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+
+  if (input.id) {
+    const { data: existing } = await supabase
+      .from("bookings")
+      .select(
+        "id, user_id, tour_slug, tour_title, travel_date, seats, amount, payment_mode, status, paid_at",
+      )
+      .eq("id", input.id)
+      .maybeSingle();
+    if (existing) return toBooking(existing as BookingRow);
+  }
   const { data, error } = await supabase
     .from("bookings")
     .insert({

@@ -177,8 +177,7 @@ export default async function TourDetailPage({
             Reserve and pay
           </Button>
           <p className="mt-3 text-xs leading-5 text-muted-foreground">
-            You will sign in or register first. Payment is simulated — no live
-            charges.
+            You will sign in or register first. Card and UPI go through Razorpay.
           </p>
         </aside>
       </div>

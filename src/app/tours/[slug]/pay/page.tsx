@@ -2,41 +2,80 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  digitsForRazorpay,
+  loadRazorpayCheckout,
+  openRazorpayCheckout,
+} from "@/lib/razorpay-checkout";
 import { formatPrice, getTour } from "@/lib/tours";
 import type { PaymentMode } from "@/lib/types";
 
-const modes: { id: PaymentMode; title: string; hint: string }[] = [
-  { id: "card", title: "Credit / debit card", hint: "Visa, Mastercard, RuPay" },
-  { id: "upi", title: "UPI", hint: "GPay, PhonePe, BHIM" },
+const modes: { id: "card" | "upi"; title: string; hint: string }[] = [
+  { id: "card", title: "Credit / debit card", hint: "Visa, Mastercard, RuPay via Razorpay" },
+  { id: "upi", title: "UPI", hint: "GPay, PhonePe, BHIM via Razorpay" },
 ];
+
+type Gateway = { enabled: boolean } | null;
+
+type OrderPayload = {
+  keyId: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  error?: string;
+};
+
+type VerifyPayload = {
+  ok?: boolean;
+  bookingId?: string;
+  tourSlug?: string;
+  tourTitle?: string;
+  travelDate?: string;
+  seats?: number;
+  amount?: number;
+  paymentMode?: PaymentMode;
+  error?: string;
+};
 
 export default function PayPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const tour = getTour(slug);
   const router = useRouter();
   const { user, ready, payForTour } = useAuth();
+  const [gateway, setGateway] = useState<Gateway>(null);
   const [seats, setSeats] = useState(1);
-  const [mode, setMode] = useState<PaymentMode>("upi");
-  const [cardName, setCardName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [upiId, setUpiId] = useState("");
+  const [mode, setMode] = useState<"card" | "upi">("upi");
   const [agree, setAgree] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   const total = useMemo(() => (tour ? tour.price * seats : 0), [tour, seats]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/razorpay/config")
+      .then((response) => response.json() as Promise<{ enabled?: boolean }>)
+      .then((data) => {
+        if (!cancelled) setGateway({ enabled: Boolean(data.enabled) });
+      })
+      .catch(() => {
+        if (!cancelled) setGateway({ enabled: false });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (!tour) {
     return (
@@ -50,7 +89,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
     );
   }
 
-  if (!ready) {
+  if (!ready || gateway === null) {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center text-muted-foreground">
         Loading checkout…
@@ -85,41 +124,122 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
     );
   }
 
+  const traveler = user;
+  const useRazorpay = gateway.enabled;
+
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
+    if (!Number.isInteger(seats) || seats < 1) {
+      setError("Choose at least one traveler.");
+      return;
+    }
     if (!agree) {
-      setError("Confirm that you understand this is a simulated payment.");
+      setError(
+        useRazorpay
+          ? "Confirm that you want to pay this amount through Razorpay."
+          : "Confirm that you understand this checkout is a local demo until Razorpay keys are added.",
+      );
       return;
     }
-    if (mode === "card") {
-      if (cardNumber.replace(/\s/g, "").length < 12 || cvv.length < 3 || !expiry || !cardName) {
-        setError("Enter complete card details to continue the demo.");
-        return;
-      }
-    }
-    if (mode === "upi" && !upiId.includes("@")) {
-      setError("Enter a UPI ID like name@okbank.");
+
+    const selected = getTour(slug);
+    if (!selected) {
+      setError("Tour is no longer listed.");
       return;
     }
+
     setPending(true);
-    await new Promise((resolve) => setTimeout(resolve, 1100));
+
     try {
-      const selected = getTour(slug);
-      if (!selected) {
-        setError("Tour is no longer listed.");
-        setPending(false);
+      if (!useRazorpay) {
+        const booking = await payForTour({
+          tourSlug: selected.slug,
+          tourTitle: selected.title,
+          travelDate: selected.nextDate,
+          seats,
+          amount: selected.price * seats,
+          paymentMode: mode,
+        });
+        router.push(`/portal?paid=${booking.id}`);
         return;
       }
-      const booking = await payForTour({
-        tourSlug: selected.slug,
-        tourTitle: selected.title,
-        travelDate: selected.nextDate,
-        seats,
-        amount: selected.price * seats,
-        paymentMode: mode,
+
+      const orderResponse = await fetch("/api/razorpay/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug: selected.slug,
+          seats,
+          userId: traveler.id,
+          preferredMethod: mode,
+        }),
       });
-      router.push(`/portal?paid=${booking.id}`);
+      const order = (await orderResponse.json()) as OrderPayload;
+      if (!orderResponse.ok || !order.orderId) {
+        throw new Error(order.error || "Could not start Razorpay checkout.");
+      }
+
+      const loaded = await loadRazorpayCheckout();
+      if (!loaded) {
+        throw new Error("Could not load Razorpay Checkout. Check your connection and try again.");
+      }
+
+      openRazorpayCheckout({
+        key: order.keyId,
+        amount: Number(order.amount),
+        currency: order.currency || "INR",
+        name: order.name,
+        description: order.description,
+        image: `${window.location.origin}/wow-logo.png`,
+        order_id: order.orderId,
+        prefill: {
+          name: traveler.name,
+          email: traveler.email,
+          contact: digitsForRazorpay(traveler.phone),
+          method: mode,
+        },
+        method: {
+          card: true,
+          upi: true,
+          netbanking: false,
+          wallet: false,
+          emi: false,
+          paylater: false,
+        },
+        theme: { color: "#7a4a2b" },
+        modal: {
+          ondismiss: () => setPending(false),
+        },
+        handler: (response) => {
+          void (async () => {
+            try {
+              const verifyResponse = await fetch("/api/razorpay/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(response),
+              });
+              const verified = (await verifyResponse.json()) as VerifyPayload;
+              if (!verifyResponse.ok || !verified.ok || !verified.bookingId) {
+                throw new Error(verified.error || "Payment could not be verified.");
+              }
+              const booking = await payForTour({
+                id: verified.bookingId,
+                tourSlug: verified.tourSlug ?? selected.slug,
+                tourTitle: verified.tourTitle ?? selected.title,
+                travelDate: verified.travelDate ?? selected.nextDate,
+                seats: verified.seats ?? seats,
+                amount: verified.amount ?? selected.price * seats,
+                paymentMode: verified.paymentMode ?? mode,
+              });
+              router.push(`/portal?paid=${booking.id}`);
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "Payment failed.");
+              setPending(false);
+            }
+          })();
+        },
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Payment failed.");
       setPending(false);
@@ -134,7 +254,10 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
           <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">Payment</p>
           <h1 className="mt-1 font-heading text-4xl">Reserve {tour.title}</h1>
           <p className="mt-2 text-muted-foreground">
-            Paying as {user.name}. Choose a mode — nothing is charged.
+            Paying as {user.name}.{" "}
+            {useRazorpay
+              ? "Card and UPI open in Razorpay Checkout. The booking is saved only after Razorpay confirms the payment."
+              : "Razorpay keys are not on this server yet, so this machine records a local demo receipt instead of charging."}
           </p>
         </div>
 
@@ -152,7 +275,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
 
         <RadioGroup
           value={mode}
-          onValueChange={(value) => setMode(value as PaymentMode)}
+          onValueChange={(value) => setMode(value as "card" | "upi")}
           className="grid gap-3"
         >
           {modes.map((item) => (
@@ -169,66 +292,11 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
           ))}
         </RadioGroup>
 
-        {mode === "card" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Card details</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="cardName">Name on card</Label>
-                <Input id="cardName" value={cardName} onChange={(e) => setCardName(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cardNumber">Card number</Label>
-                <Input
-                  id="cardNumber"
-                  inputMode="numeric"
-                  placeholder="4111 1111 1111 1111"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value)}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="expiry">Expiry</Label>
-                  <Input
-                    id="expiry"
-                    placeholder="MM/YY"
-                    value={expiry}
-                    onChange={(e) => setExpiry(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cvv">CVV</Label>
-                  <Input
-                    id="cvv"
-                    inputMode="numeric"
-                    value={cvv}
-                    onChange={(e) => setCvv(e.target.value)}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {mode === "upi" && (
-          <div className="space-y-2">
-            <Label htmlFor="upi">UPI ID</Label>
-            <Input
-              id="upi"
-              placeholder="you@okaxis"
-              value={upiId}
-              onChange={(e) => setUpiId(e.target.value)}
-            />
-          </div>
-        )}
-
         <label className="flex items-start gap-3 text-sm leading-6">
           <Checkbox checked={agree} onCheckedChange={(value) => setAgree(Boolean(value))} />
-          I understand this checkout is a demo. No money will be taken from this
-          card or UPI ID.
+          {useRazorpay
+            ? `Pay ${formatPrice(total)} through Razorpay for this trip. You will complete card or UPI in the Razorpay window.`
+            : "I understand this checkout is a local demo until Razorpay keys are added. No money will be taken."}
         </label>
 
         {error ? (
@@ -236,7 +304,11 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
         ) : null}
 
         <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
-          {pending ? "Processing…" : `Pay ${formatPrice(total)}`}
+          {pending
+            ? useRazorpay
+              ? "Opening Razorpay…"
+              : "Processing…"
+            : `Pay ${formatPrice(total)}`}
         </Button>
       </form>
 
@@ -248,6 +320,9 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
           {seats} × {formatPrice(tour.price)}
         </p>
         <p className="mt-2 font-heading text-3xl">{formatPrice(total)}</p>
+        <p className="mt-3 text-xs text-muted-foreground">
+          {useRazorpay ? "Charged by Razorpay in INR." : "Demo total — Razorpay not configured."}
+        </p>
       </aside>
     </div>
   );

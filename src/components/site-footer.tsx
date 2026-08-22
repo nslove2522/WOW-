@@ -102,8 +102,8 @@ export function SiteFooter() {
             </a>
           </div>
           <div className="flex max-w-48 flex-col gap-2 text-muted-foreground">
-            <p>Payments are simulated in this demo.</p>
-            <p>No card details leave your browser.</p>
+            <p>Card and UPI payments go through Razorpay.</p>
+            <p>Bookings are saved after Razorpay confirms the payment.</p>
           </div>
         </div>
       </div>

@@ -12,7 +12,7 @@ export type User = {
 
 export type PublicUser = Omit<User, "password">;
 
-export type PaymentMode = "card" | "upi" | "netbanking" | "wallet";
+export type PaymentMode = "card" | "upi" | "razorpay" | "netbanking" | "wallet";
 
 export type BookingStatus = "confirmed" | "cancelled";
 
@@ -30,8 +30,9 @@ export type Booking = {
 };
 
 export const PAYMENT_LABELS: Record<PaymentMode, string> = {
-  card: "Credit / debit card",
-  upi: "UPI",
+  card: "Card (Razorpay)",
+  upi: "UPI (Razorpay)",
+  razorpay: "Razorpay",
   netbanking: "Net banking",
   wallet: "Digital wallet",
 };

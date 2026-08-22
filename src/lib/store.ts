@@ -147,10 +147,17 @@ export function listBookings(userId: string) {
     .sort((a, b) => b.paidAt.localeCompare(a.paidAt));
 }
 
-export function createBooking(booking: Omit<Booking, "id" | "paidAt" | "status">) {
+export function createBooking(
+  booking: Omit<Booking, "id" | "paidAt" | "status"> & { id?: string },
+) {
+  const existing = readJson<Booking[]>(BOOKINGS_KEY, []).find(
+    (entry) => booking.id && entry.id === booking.id,
+  );
+  if (existing) return existing;
+
   const full: Booking = {
     ...booking,
-    id: `WOW-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
+    id: booking.id ?? `WOW-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
     paidAt: new Date().toISOString(),
     status: "confirmed",
   };

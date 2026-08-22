@@ -1,12 +1,12 @@
 # WOW — Wings of Women
 
-A women-only trip site for **WOW (Wings of Women)**: browse hosted tours, register, book the Seetharkundu Falls day trip, and pay in a simulated checkout.
+A women-only trip site for **WOW (Wings of Women)**: browse hosted tours, register, book the Seetharkundu Falls day trip, and pay with **Razorpay** (card or UPI).
 
-Accounts and bookings live in **Supabase** when you add your project keys, so every traveler shares the same cloud data. Without keys, this machine still runs a local demo in the browser.
+Accounts and bookings live in **Supabase** when you add your project keys, so every traveler shares the same cloud data. Without keys, this machine still runs a local demo in the browser. Without Razorpay keys, checkout records a local receipt and does not charge.
 
 ## Host it so everyone can use it
 
-Supabase holds sign-in and bookings. [Vercel](https://vercel.com) (or any Next.js host) serves the website.
+Supabase holds sign-in and bookings. [Vercel](https://vercel.com) (or any Next.js host) serves the website. Razorpay collects the payment.
 
 ### 1. Create a Supabase project
 
@@ -22,9 +22,15 @@ Copy `.env.example` to `.env.local` for your laptop:
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+RAZORPAY_KEY_ID=rzp_test_xxxxxxxx
+RAZORPAY_KEY_SECRET=your-razorpay-key-secret
 ```
 
-On Vercel: Import this Git repo → Project Settings → Environment Variables → add the same two names → Deploy.
+On Vercel: Import this Git repo → Project Settings → Environment Variables → add the same names for Production (and Preview) → Deploy.
+
+Use **test** keys while you try the flow. Switch to **live** keys (`rzp_live_…`) only on HTTPS. Live Checkout will not run on `http://localhost`.
+
+Get keys from [Razorpay Dashboard → Account & Settings → API Keys](https://dashboard.razorpay.com/app/website-app-settings/api-keys). Never put `RAZORPAY_KEY_SECRET` in client code or `NEXT_PUBLIC_` variables.
 
 ### 3. Deploy
 
@@ -53,4 +59,4 @@ Without Supabase keys, a demo traveler still works on this device only:
 
 ## Stack
 
-Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, Supabase Auth + Postgres.
+Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, Supabase Auth + Postgres, Razorpay Checkout.

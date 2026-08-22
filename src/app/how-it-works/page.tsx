@@ -16,7 +16,7 @@ const steps = [
   },
   {
     title: "Pay",
-    body: "Choose card or UPI. In this demo the charge is simulated and a receipt is written to your portal.",
+    body: "Pay with card or UPI through Razorpay. A receipt is written to your portal after the payment is verified.",
   },
   {
     title: "Travel with the group",
