@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useMemo, useState } from "react";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,6 +45,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
   if (!tour) {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
+        <BrandLogo size={140} highlight className="mx-auto mb-4 size-32" />
         <h1 className="font-heading text-3xl">Tour not found</h1>
         <Button className="mt-6" nativeButton={false} render={<Link href="/tours" />}>
           Back to tours
@@ -63,6 +65,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
   if (!user) {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
+        <BrandLogo size={140} highlight className="mx-auto mb-4 size-32" />
         <h1 className="font-heading text-3xl">Sign in to pay</h1>
         <p className="mt-3 text-muted-foreground">
           Reservations sit on your WOW account so the host can see who is coming.
@@ -131,6 +134,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
     <div className="mx-auto grid w-full max-w-5xl gap-8 px-4 py-12 lg:grid-cols-[1fr_320px]">
       <form onSubmit={onSubmit} className="space-y-6">
         <div>
+          <BrandLogo size={80} className="mb-3 size-[4.5rem]" />
           <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">Payment</p>
           <h1 className="mt-1 font-heading text-4xl">Reserve {tour.title}</h1>
           <p className="mt-2 text-muted-foreground">

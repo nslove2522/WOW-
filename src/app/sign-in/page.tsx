@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ function SignInForm() {
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-16">
+      <BrandLogo size={120} highlight className="mb-4 size-28" />
       <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">Account</p>
       <h1 className="mt-2 font-heading text-4xl">Sign in</h1>
       <p className="mt-2 text-sm text-muted-foreground">

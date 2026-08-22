@@ -17,11 +17,11 @@ export function BrandLogo({
   highlight = false,
 }: BrandLogoProps) {
   return (
-    <span className={cn("relative inline-flex shrink-0", highlight && "p-2")}>
+    <span className={cn("relative inline-flex shrink-0 items-center justify-center", highlight && "p-1")}>
       {highlight ? (
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-[-8%] rounded-full bg-[radial-gradient(circle,rgba(201,162,39,0.45)_0%,rgba(201,162,39,0)_70%)] blur-md"
+          className="pointer-events-none absolute inset-[-6%] rounded-full bg-[radial-gradient(circle,rgba(90,110,50,0.18)_0%,rgba(90,110,50,0)_68%)]"
         />
       ) : null}
       <Image
@@ -30,11 +30,7 @@ export function BrandLogo({
         width={size}
         height={size}
         priority={priority}
-        className={cn(
-          "relative z-10 h-auto w-auto bg-transparent object-contain",
-          highlight && "drop-shadow-[0_8px_24px_rgba(201,162,39,0.45)]",
-          className,
-        )}
+        className={cn("relative z-10 bg-transparent object-contain", className)}
       />
     </span>
   );

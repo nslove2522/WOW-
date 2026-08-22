@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/wow-logo.png",
     apple: "/wow-logo.png",
+    shortcut: "/wow-logo.png",
   },
 };
 
