@@ -26,12 +26,16 @@ RAZORPAY_KEY_ID=rzp_test_xxxxxxxx
 RAZORPAY_KEY_SECRET=your-razorpay-key-secret
 ```
 
-On Vercel: Project → Settings → Environment Variables. Add **both** names for **Production and Preview** (not only Development):
+On Vercel: Project → Settings → Environment Variables. Add these for **Production and Preview**:
 
+- `NEXT_PUBLIC_SUPABASE_URL` — Project URL (`https://xxxx.supabase.co`, no `/rest/v1`)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — anon public key
 - `RAZORPAY_KEY_ID` — Key Id from Razorpay, for example `rzp_test_…` or `rzp_live_…`
 - `RAZORPAY_KEY_SECRET` — Key Secret from the same pair
 
-Paste the values with no quotes around them. Then **Redeploy** the latest production deployment so the new keys load. Checkout will not charge until those two are present.
+Without the two Supabase names, register and pay only store data in the browser. The `profiles` and `bookings` tables stay empty. After saving variables, **Redeploy** Production.
+
+Paste the values with no quotes around them.
 
 Use **test** keys while you try the ₹1 trip. Switch to **live** keys (`rzp_live_…`) only on HTTPS. Live Checkout will not run on `http://localhost`. Test and live keys cannot be mixed.
 

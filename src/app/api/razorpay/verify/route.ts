@@ -11,6 +11,7 @@ import {
   verifyCheckoutSignature,
 } from "@/lib/razorpay";
 import { getTour } from "@/lib/tours";
+import { saveServerBooking } from "@/lib/supabase/server-booking";
 
 export const runtime = "nodejs";
 
@@ -86,6 +87,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Paid amount does not match the trip price." }, { status: 400 });
     }
 
+    const paymentMode = paymentMethodToMode(payment.method);
+    const amount = paiseToRupees(amountPaise);
+
+    try {
+      await saveServerBooking({
+        id: paymentId,
+        tourSlug: tour.slug,
+        tourTitle: tour.title,
+        travelDate: tour.nextDate,
+        seats,
+        amount,
+        paymentMode,
+      });
+    } catch (error) {
+      return NextResponse.json({
+        ok: true,
+        bookingId: paymentId,
+        tourSlug: tour.slug,
+        tourTitle: tour.title,
+        travelDate: tour.nextDate,
+        seats,
+        amount,
+        paymentMode,
+        persistError: razorpayErrorMessage(error),
+      });
+    }
+
     return NextResponse.json({
       ok: true,
       bookingId: paymentId,
@@ -93,8 +121,8 @@ export async function POST(request: Request) {
       tourTitle: tour.title,
       travelDate: tour.nextDate,
       seats,
-      amount: paiseToRupees(amountPaise),
-      paymentMode: paymentMethodToMode(payment.method),
+      amount,
+      paymentMode,
     });
   } catch (error) {
     return NextResponse.json({ error: razorpayErrorMessage(error) }, { status: 502 });

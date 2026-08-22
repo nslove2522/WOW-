@@ -32,6 +32,7 @@ import {
   updateCloudProfile,
 } from "@/lib/supabase/cloud-store";
 import { isSupabaseEnabled } from "@/lib/supabase/env";
+import { setSupabaseRuntime } from "@/lib/supabase/runtime";
 import type { Booking, PaymentMode, PublicUser } from "@/lib/types";
 
 type Snapshot = {
@@ -86,7 +87,8 @@ function readLocalSnapshot(): Snapshot {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const cloud = isSupabaseEnabled();
+  const [cloud, setCloud] = useState(false);
+  const [configReady, setConfigReady] = useState(false);
   const [snapshot, setSnapshot] = useState<Snapshot>({
     user: null,
     bookings: [],
@@ -99,15 +101,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/public-config")
+      .then((response) => response.json() as Promise<{
+        supabaseUrl?: string;
+        supabaseAnonKey?: string;
+        supabase?: boolean;
+      }>)
+      .then((config) => {
+        if (cancelled) return;
+        const url = config.supabaseUrl ?? "";
+        const anon = config.supabaseAnonKey ?? "";
+        setSupabaseRuntime(url, anon);
+        const enabled = Boolean(config.supabase && url && anon);
+        setCloud(enabled);
+        setConfigReady(true);
+        if (!enabled) {
+          setSnapshot(readLocalSnapshot());
+          return;
+        }
+        void refreshCloud();
+      })
+      .catch(() => {
+        if (cancelled) return;
+        const enabled = isSupabaseEnabled();
+        setCloud(enabled);
+        setConfigReady(true);
+        if (!enabled) {
+          setSnapshot(readLocalSnapshot());
+          return;
+        }
+        void refreshCloud();
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshCloud]);
+
+  useEffect(() => {
+    if (!configReady) return;
     if (!cloud) {
-      setSnapshot(readLocalSnapshot());
       return subscribeStore(() => setSnapshot(readLocalSnapshot()));
     }
-    void refreshCloud();
     return subscribeCloudAuth(() => {
       void refreshCloud();
     });
-  }, [cloud, refreshCloud]);
+  }, [cloud, configReady, refreshCloud]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

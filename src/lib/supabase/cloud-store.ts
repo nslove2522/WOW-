@@ -53,7 +53,26 @@ function toBooking(row: BookingRow): Booking {
   };
 }
 
-async function fetchProfile(userId: string, email: string): Promise<PublicUser | null> {
+async function upsertProfile(row: {
+  id: string;
+  name: string;
+  email: string;
+  country: string;
+  state: string;
+  city: string;
+  phone: string;
+}): Promise<PublicUser> {
+  const supabase = createSupabaseBrowserClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .upsert(row, { onConflict: "id" })
+    .select("id, name, email, country, state, city, phone, created_at")
+    .single();
+  if (error) throw new Error(error.message);
+  return toUser(data as ProfileRow);
+}
+
+async function fetchProfile(userId: string, email: string, meta?: Record<string, unknown>): Promise<PublicUser | null> {
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase
     .from("profiles")
@@ -61,22 +80,28 @@ async function fetchProfile(userId: string, email: string): Promise<PublicUser |
     .eq("id", userId)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  if (data) return toUser(data as ProfileRow);
-  const { data: inserted, error: insertError } = await supabase
-    .from("profiles")
-    .insert({
+  if (data) {
+    const row = data as ProfileRow;
+    if (row.name && row.phone) return toUser(row);
+  }
+  const name = String(meta?.name ?? data?.name ?? "");
+  const country = String(meta?.country ?? data?.country ?? "IN");
+  const state = String(meta?.state ?? data?.state ?? "");
+  const city = String(meta?.city ?? data?.city ?? "");
+  const phone = String(meta?.phone ?? data?.phone ?? "");
+  try {
+    return await upsertProfile({
       id: userId,
       email,
-      name: "",
-      country: "IN",
-      state: "",
-      city: "",
-      phone: "",
-    })
-    .select("id, name, email, country, state, city, phone, created_at")
-    .single();
-  if (insertError) return null;
-  return toUser(inserted as ProfileRow);
+      name,
+      country: country || "IN",
+      state,
+      city,
+      phone,
+    });
+  } catch {
+    return data ? toUser(data as ProfileRow) : null;
+  }
 }
 
 export async function loadCloudSession(): Promise<{
@@ -87,7 +112,11 @@ export async function loadCloudSession(): Promise<{
   const { data: sessionData } = await supabase.auth.getSession();
   const authUser = sessionData.session?.user;
   if (!authUser) return { user: null, bookings: [] };
-  const user = await fetchProfile(authUser.id, authUser.email ?? "");
+  const user = await fetchProfile(
+    authUser.id,
+    authUser.email ?? "",
+    (authUser.user_metadata ?? {}) as Record<string, unknown>,
+  );
   if (!user) return { user: null, bookings: [] };
   const bookings = await listCloudBookings();
   return { user, bookings };
@@ -125,11 +154,20 @@ export async function registerCloudUser(input: {
     },
   });
   if (error) throw new Error(error.message);
-  if (!data.session) {
+  if (!data.session || !data.user) {
     throw new Error(
       "Account created. Confirm your email from the message Supabase sent, then sign in.",
     );
   }
+  await upsertProfile({
+    id: data.user.id,
+    name: input.name.trim(),
+    email: input.email.trim().toLowerCase(),
+    country: input.country,
+    state: input.state.trim(),
+    city: input.city.trim(),
+    phone: input.phone.trim(),
+  });
 }
 
 export async function signInCloud(email: string, password: string) {
