@@ -71,13 +71,26 @@ export function SiteHeader() {
     <div className="h-8 w-28 animate-pulse rounded-md bg-muted" />
   );
 
+  const hideHeaderEmblem = pathname === "/register";
+
   return (
-    <header className="sticky top-0 z-40 overflow-visible border-b border-border/80 bg-background/90 backdrop-blur">
+    <header
+      className={cn(
+        "sticky top-0 z-40 overflow-visible border-b backdrop-blur",
+        hideHeaderEmblem
+          ? "border-white/25 bg-sky-100/35 text-teal-950"
+          : "border-border/80 bg-background/90",
+      )}
+    >
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="relative z-10 flex items-center bg-transparent" aria-label={brand.full}>
-          <BrandLogo size={140} priority highlight className="h-[4.5rem] w-auto" />
-          <span className="sr-only">{brand.full}</span>
-        </Link>
+        {hideHeaderEmblem ? (
+          <span className="w-10" aria-hidden />
+        ) : (
+          <Link href="/" className="relative z-10 flex items-center bg-transparent" aria-label={brand.full}>
+            <BrandLogo size={140} priority highlight className="h-[4.5rem] w-auto" />
+            <span className="sr-only">{brand.full}</span>
+          </Link>
+        )}
         <div className="hidden items-center gap-8 md:flex">
           {nav}
           {actions}
