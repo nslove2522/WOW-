@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   cancelBooking,
@@ -13,6 +20,18 @@ import {
   subscribeStore,
   updateUser,
 } from "@/lib/store";
+import {
+  cancelCloudBooking,
+  createCloudBooking,
+  listCloudBookings,
+  loadCloudSession,
+  registerCloudUser,
+  signInCloud,
+  signOutCloud,
+  subscribeCloudAuth,
+  updateCloudProfile,
+} from "@/lib/supabase/cloud-store";
+import { isSupabaseEnabled } from "@/lib/supabase/env";
 import type { Booking, PaymentMode, PublicUser } from "@/lib/types";
 
 type Snapshot = {
@@ -21,27 +40,11 @@ type Snapshot = {
   ready: boolean;
 };
 
-const emptySnapshot: Snapshot = { user: null, bookings: [], ready: false };
-
-let cached: Snapshot = emptySnapshot;
-
-function getClientSnapshot(): Snapshot {
-  const user = getSessionUser();
-  const bookings = user ? listBookings(user.id) : [];
-  const next: Snapshot = { user, bookings, ready: true };
-  if (JSON.stringify(cached) === JSON.stringify(next)) return cached;
-  cached = next;
-  return cached;
-}
-
-function getServerSnapshot(): Snapshot {
-  return emptySnapshot;
-}
-
 type AuthContextValue = {
   user: PublicUser | null;
   bookings: Booking[];
   ready: boolean;
+  cloud: boolean;
   register: (input: {
     name: string;
     email: string;
@@ -50,10 +53,15 @@ type AuthContextValue = {
     state: string;
     city: string;
     phone: string;
-  }) => void;
-  signIn: (email: string, password: string) => void;
-  signOut: () => void;
-  saveProfile: (patch: { name: string; city: string; phone: string; state?: string }) => void;
+  }) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  saveProfile: (patch: {
+    name: string;
+    city: string;
+    phone: string;
+    state?: string;
+  }) => Promise<void>;
   payForTour: (input: {
     tourSlug: string;
     tourTitle: string;
@@ -61,47 +69,115 @@ type AuthContextValue = {
     seats: number;
     amount: number;
     paymentMode: PaymentMode;
-  }) => Booking;
-  cancel: (bookingId: string) => void;
+  }) => Promise<Booking>;
+  cancel: (bookingId: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function readLocalSnapshot(): Snapshot {
+  const user = getSessionUser();
+  return {
+    user,
+    bookings: user ? listBookings(user.id) : [],
+    ready: true,
+  };
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const snapshot = useSyncExternalStore(
-    subscribeStore,
-    getClientSnapshot,
-    getServerSnapshot,
-  );
+  const cloud = isSupabaseEnabled();
+  const [snapshot, setSnapshot] = useState<Snapshot>({
+    user: null,
+    bookings: [],
+    ready: false,
+  });
+
+  const refreshCloud = useCallback(async () => {
+    const next = await loadCloudSession();
+    setSnapshot({ ...next, ready: true });
+  }, []);
+
+  useEffect(() => {
+    if (!cloud) {
+      setSnapshot(readLocalSnapshot());
+      return subscribeStore(() => setSnapshot(readLocalSnapshot()));
+    }
+    void refreshCloud();
+    return subscribeCloudAuth(() => {
+      void refreshCloud();
+    });
+  }, [cloud, refreshCloud]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user: snapshot.user,
       bookings: snapshot.bookings,
       ready: snapshot.ready,
-      register: (input) => {
+      cloud,
+      register: async (input) => {
+        if (cloud) {
+          await registerCloudUser(input);
+          await refreshCloud();
+          return;
+        }
         registerUser(input);
+        setSnapshot(readLocalSnapshot());
       },
-      signIn: (email, password) => {
+      signIn: async (email, password) => {
+        if (cloud) {
+          await signInCloud(email, password);
+          await refreshCloud();
+          return;
+        }
         signInUser(email, password);
+        setSnapshot(readLocalSnapshot());
       },
-      signOut: () => {
+      signOut: async () => {
+        if (cloud) {
+          await signOutCloud();
+          await refreshCloud();
+          return;
+        }
         signOutUser();
+        setSnapshot(readLocalSnapshot());
       },
-      saveProfile: (patch) => {
+      saveProfile: async (patch) => {
         if (!snapshot.user) return;
+        if (cloud) {
+          await updateCloudProfile(snapshot.user.id, patch);
+          await refreshCloud();
+          return;
+        }
         updateUser(snapshot.user.id, patch);
+        setSnapshot(readLocalSnapshot());
       },
-      payForTour: (input) => {
+      payForTour: async (input) => {
         if (!snapshot.user) throw new Error("Sign in to pay.");
-        return createBooking({ ...input, userId: snapshot.user.id });
+        if (cloud) {
+          const booking = await createCloudBooking({
+            ...input,
+            userId: snapshot.user.id,
+          });
+          const bookings = await listCloudBookings();
+          setSnapshot((current) => ({ ...current, bookings }));
+          return booking;
+        }
+        const booking = createBooking({ ...input, userId: snapshot.user.id });
+        setSnapshot(readLocalSnapshot());
+        return booking;
       },
-      cancel: (bookingId) => {
+      cancel: async (bookingId) => {
         if (!snapshot.user) return;
+        if (cloud) {
+          await cancelCloudBooking(bookingId);
+          await refreshCloud();
+          return;
+        }
         cancelBooking(snapshot.user.id, bookingId);
+        setSnapshot(readLocalSnapshot());
       },
     }),
-    [snapshot],
+    [cloud, refreshCloud, snapshot],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

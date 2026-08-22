@@ -64,7 +64,7 @@ function PortalBody() {
           <h1 className="mt-1 font-heading text-4xl">Hello, {user.name.split(" ")[0]}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{user.email}</p>
         </div>
-        <Button variant="outline" onClick={() => { signOut(); router.push("/"); }}>
+        <Button variant="outline" onClick={() => { void signOut().then(() => router.push("/")); }}>
           Sign out
         </Button>
       </div>
@@ -123,7 +123,7 @@ function PortalBody() {
                       >
                         Tour details
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => cancel(booking.id)}>
+                      <Button variant="ghost" size="sm" onClick={() => void cancel(booking.id)}>
                         Cancel
                       </Button>
                     </div>
@@ -170,7 +170,7 @@ function ProfileForm({
   city: string;
   state: string;
   phone: string;
-  onSave: (patch: { name: string; city: string; phone: string; state?: string }) => void;
+  onSave: (patch: { name: string; city: string; phone: string; state?: string }) => Promise<void>;
 }) {
   const [name, setName] = useState(initialName);
   const [city, setCity] = useState(initialCity);
@@ -181,9 +181,9 @@ function ProfileForm({
   return (
     <form
       className="max-w-lg space-y-4"
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
-        onSave({ name, city, phone, state });
+        await onSave({ name, city, phone, state });
         setSaved(true);
       }}
     >

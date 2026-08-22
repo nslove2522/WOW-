@@ -17,7 +17,7 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/portal";
-  const { signIn, user, ready } = useAuth();
+  const { signIn, user, ready, cloud } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -28,7 +28,7 @@ function SignInForm() {
     if (ready && user) router.replace(next);
   }, [ready, user, next, router]);
 
-  function onSubmit(event: React.FormEvent) {
+  async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
     if (!email.trim() || !password) {
@@ -37,7 +37,7 @@ function SignInForm() {
     }
     setPending(true);
     try {
-      signIn(email, password);
+      await signIn(email, password);
       router.push(next);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not sign in.");
@@ -134,19 +134,23 @@ function SignInForm() {
           >
             {pending ? "Signing in…" : "Sign in"}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full border-teal-800/25 bg-white/50 text-teal-950 hover:bg-white/80"
-            disabled={pending}
-            onClick={() => {
-              setEmail("aisha@wingsofwomen.test");
-              setPassword("wander2026");
-              setError(null);
-            }}
-          >
-            Use demo traveler
-          </Button>
+          {!cloud ? (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full border-teal-800/25 bg-white/50 text-teal-950 hover:bg-white/80"
+                disabled={pending}
+                onClick={() => {
+                  setEmail("aisha@wingsofwomen.test");
+                  setPassword("wander2026");
+                  setError(null);
+                }}
+              >
+                Use demo traveler
+              </Button>
+            </>
+          ) : null}
         </form>
 
         <p className="mt-6 text-center text-sm text-teal-900/70">
@@ -158,9 +162,15 @@ function SignInForm() {
             Create an account
           </Link>
         </p>
-        <p className="mt-4 rounded-lg bg-sky-100/70 px-3 py-2 text-center text-xs leading-5 text-teal-900/70">
-          Demo: aisha@wingsofwomen.test / wander2026
-        </p>
+        {!cloud ? (
+          <p className="mt-4 rounded-lg bg-sky-100/70 px-3 py-2 text-center text-xs leading-5 text-teal-900/70">
+            Demo: aisha@wingsofwomen.test / wander2026
+          </p>
+        ) : (
+          <p className="mt-4 rounded-lg bg-sky-100/70 px-3 py-2 text-center text-xs leading-5 text-teal-900/70">
+            Accounts are stored in the cloud. Register once, then sign in from any device.
+          </p>
+        )}
       </div>
     </div>
   );

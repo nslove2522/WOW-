@@ -53,7 +53,7 @@ function RegisterForm() {
     setNationalPhone("");
   }
 
-  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
@@ -85,7 +85,7 @@ function RegisterForm() {
 
     setPending(true);
     try {
-      register({
+      await register({
         name,
         email,
         password,

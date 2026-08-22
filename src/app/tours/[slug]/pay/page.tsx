@@ -115,7 +115,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
         setPending(false);
         return;
       }
-      const booking = payForTour({
+      const booking = await payForTour({
         tourSlug: selected.slug,
         tourTitle: selected.title,
         travelDate: selected.nextDate,

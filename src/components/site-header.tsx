@@ -54,7 +54,7 @@ export function SiteHeader() {
         <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/portal" />}>
           {user.name.split(" ")[0]}
         </Button>
-        <Button variant="outline" size="sm" onClick={signOut}>
+        <Button variant="outline" size="sm" onClick={() => void signOut()}>
           Sign out
         </Button>
       </div>
