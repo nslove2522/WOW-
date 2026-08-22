@@ -6,7 +6,7 @@ import { brand } from "@/lib/brand";
 export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-border/80 bg-card">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 md:flex-row md:items-start md:justify-between">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm">
           <BrandLogo size={112} highlight className="h-24 w-auto" />
           <p className="mt-3 text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">
@@ -17,24 +17,53 @@ export function SiteFooter() {
             locked guest lists, and a portal for your bookings. {brand.motto}.
           </p>
         </div>
-        <div className="flex gap-12 text-sm">
+        <div className="flex flex-wrap gap-12 text-sm">
           <div className="flex flex-col gap-2">
-            <Link href="/tours" className="hover:underline">
+            <p className="font-medium text-foreground">Explore</p>
+            <Link href="/tours" className="text-muted-foreground hover:underline">
               Upcoming tours
             </Link>
-            <Link href="/how-it-works" className="hover:underline">
+            <Link href="/how-it-works" className="text-muted-foreground hover:underline">
               How it works
             </Link>
-            <Link href="/register" className="hover:underline">
+            <Link href="/register" className="text-muted-foreground hover:underline">
               Create an account
             </Link>
           </div>
-          <div className="flex flex-col gap-2 text-muted-foreground">
+          <div className="flex min-w-44 flex-col gap-2">
+            <p className="font-medium text-foreground">Contact</p>
+            <a
+              href={brand.instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground hover:underline"
+            >
+              <InstagramMark />
+              Instagram {brand.instagramHandle}
+            </a>
+            <p className="text-muted-foreground">More contact details will live here.</p>
+          </div>
+          <div className="flex max-w-48 flex-col gap-2 text-muted-foreground">
             <p>Payments are simulated in this demo.</p>
             <p>No card details leave your browser.</p>
           </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+function InstagramMark() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className="size-4 shrink-0 fill-none stroke-current"
+      strokeWidth="1.8"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+    </svg>
   );
 }
