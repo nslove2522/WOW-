@@ -134,6 +134,9 @@ function mapAuthError(message: string) {
   if (/rate limit/i.test(message) && /email/i.test(message)) {
     return "Too many confirmation emails were sent. Wait about an hour, or in Supabase go to Authentication → Providers → Email and turn off Confirm email, then try again. If this email already registered, use Sign in.";
   }
+  if (/already registered/i.test(message) || /already been registered/i.test(message)) {
+    return "This email is still in Supabase Authentication. Deleting a row in profiles is not enough. Go to Authentication → Users, delete that email, then register again. Or Sign in if you still have the password.";
+  }
   return message;
 }
 
@@ -147,8 +150,9 @@ export async function registerCloudUser(input: {
   phone: string;
 }) {
   const supabase = createSupabaseBrowserClient();
+  const email = input.email.trim().toLowerCase();
   const { data, error } = await supabase.auth.signUp({
-    email: input.email.trim().toLowerCase(),
+    email,
     password: input.password,
     options: {
       data: {
@@ -160,16 +164,33 @@ export async function registerCloudUser(input: {
       },
     },
   });
-  if (error) throw new Error(mapAuthError(error.message));
-  if (!data.session || !data.user) {
+
+  let user = data.user;
+  let session = data.session;
+
+  if (error && /already registered/i.test(error.message)) {
+    const retry = await supabase.auth.signInWithPassword({
+      email,
+      password: input.password,
+    });
+    if (retry.error || !retry.data.user) {
+      throw new Error(mapAuthError(error.message));
+    }
+    user = retry.data.user;
+    session = retry.data.session;
+  } else if (error) {
+    throw new Error(mapAuthError(error.message));
+  }
+
+  if (!session || !user) {
     throw new Error(
       "Account created. Confirm your email from the message Supabase sent, then sign in.",
     );
   }
   await upsertProfile({
-    id: data.user.id,
+    id: user.id,
     name: input.name.trim(),
-    email: input.email.trim().toLowerCase(),
+    email,
     country: input.country,
     state: input.state.trim(),
     city: input.city.trim(),
