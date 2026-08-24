@@ -39,7 +39,7 @@ export function SiteHeader() {
           href={link.href}
           onClick={() => setOpen(false)}
           className={cn(
-            "rounded-md px-2 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
+            "rounded-md px-3 py-3 text-base font-medium text-muted-foreground transition-colors hover:text-foreground touch-manipulation",
             pathname === link.href && "text-foreground",
           )}
         >
@@ -90,8 +90,8 @@ export function SiteHeader() {
                   aria-label="Open menu"
                   className={
                     overPhoto
-                      ? "border-white/55 bg-white/15 text-white shadow-sm backdrop-blur-sm hover:bg-white/25 hover:text-white"
-                      : "border-border bg-background/85 shadow-sm backdrop-blur-sm"
+                      ? "size-11 border-white/55 bg-white/15 text-white shadow-sm backdrop-blur-sm hover:bg-white/25 hover:text-white"
+                      : "size-11 border-border bg-background/85 shadow-sm backdrop-blur-sm"
                   }
                 />
               }

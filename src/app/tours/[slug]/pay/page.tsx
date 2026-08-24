@@ -8,7 +8,6 @@ import { BrandLogo } from "@/components/brand-logo";
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -245,12 +244,12 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
   }
 
   return (
-    <div className="mx-auto grid w-full max-w-5xl gap-8 px-4 py-12 lg:grid-cols-[1fr_320px]">
+    <div className="mx-auto grid w-full max-w-5xl gap-8 px-4 py-8 sm:py-12 lg:grid-cols-[1fr_320px]">
       <form onSubmit={onSubmit} className="space-y-6">
         <div>
-          <BrandLogo size={80} className="mb-3 h-[4.5rem] w-auto" />
+          <BrandLogo size={80} className="mb-3 h-16 w-auto sm:h-[4.5rem]" />
           <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">Payment</p>
-          <h1 className="mt-1 font-heading text-4xl">Reserve {tour.title}</h1>
+          <h1 className="mt-1 font-heading text-3xl leading-tight sm:text-4xl">Reserve {tour.title}</h1>
           <p className="mt-2 text-muted-foreground">
             Paying as {user.name}.{" "}
             {useRazorpay
@@ -259,15 +258,22 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
           </p>
         </div>
 
-        <div className="max-w-xs space-y-2">
+        <div className="w-full max-w-sm space-y-2">
           <Label htmlFor="seats">Travelers</Label>
-          <Input
+          <select
             id="seats"
-            type="number"
-            min={1}
-            value={seats}
+            value={String(seats)}
             onChange={(event) => setSeats(Number(event.target.value))}
-          />
+            className="h-12 w-full min-h-12 touch-manipulation rounded-lg border border-input bg-background px-3 text-base text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            {Array.from({ length: Math.max(1, tour.seatsLeft) }, (_, index) => index + 1).map(
+              (count) => (
+                <option key={count} value={count}>
+                  {count} {count === 1 ? "traveler" : "travelers"}
+                </option>
+              ),
+            )}
+          </select>
           <p className="text-xs text-muted-foreground">{tour.seatsLeft} seats still listed.</p>
         </div>
 
@@ -279,7 +285,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
           {modes.map((item) => (
             <Label
               key={item.id}
-              className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4 has-data-checked:border-primary"
+              className="flex min-h-14 cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4 touch-manipulation has-data-checked:border-primary"
             >
               <RadioGroupItem value={item.id} />
               <span>
@@ -290,7 +296,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
           ))}
         </RadioGroup>
 
-        <label className="flex items-start gap-3 text-sm leading-6">
+        <label className="flex items-start gap-3 text-sm leading-6 touch-manipulation">
           <Checkbox checked={agree} onCheckedChange={(value) => setAgree(Boolean(value))} />
           {useRazorpay
             ? `Pay ${formatPrice(total)} through Razorpay for this trip. You will complete card or UPI in the Razorpay window.`
@@ -301,7 +307,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
           <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
         ) : null}
 
-        <Button type="submit" size="lg" disabled={pending || !useRazorpay} className="w-full sm:w-auto">
+        <Button type="submit" size="lg" disabled={pending || !useRazorpay} className="min-h-12 w-full touch-manipulation sm:w-auto">
           {pending
             ? "Opening Razorpay…"
             : useRazorpay
