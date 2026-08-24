@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { AdminDatabaseSetupHint, AdminSetupNotice } from "@/components/admin/setup-notice";
 import { Button } from "@/components/ui/button";
 import type { TourRecord } from "@/lib/catalog";
 import { formatPrice } from "@/lib/tours";
@@ -14,10 +15,9 @@ export default function AdminTripsPage() {
   useEffect(() => {
     void fetch("/api/admin/tours")
       .then(async (response) => {
-        const data = (await response.json()) as { tours?: TourRecord[]; error?: string };
+        const data = (await response.json().catch(() => ({}))) as { tours?: TourRecord[]; error?: string };
         if (!response.ok) {
           setError(data.error || "Could not load trips.");
-          setTours([]);
           return;
         }
         setTours(data.tours ?? []);
@@ -40,8 +40,13 @@ export default function AdminTripsPage() {
         </Button>
       </div>
 
-      {error ? <p className="mt-8 text-sm text-destructive">{error}</p> : null}
-      {!tours ? (
+      {error ? (
+        <AdminSetupNotice error={error}>
+          Guests still see the built-in Seetharkundu trip on the public site.{" "}
+          <AdminDatabaseSetupHint />
+        </AdminSetupNotice>
+      ) : null}
+      {error ? null : !tours ? (
         <p className="mt-10 text-muted-foreground">Loading trips…</p>
       ) : tours.length === 0 ? (
         <p className="mt-10 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">

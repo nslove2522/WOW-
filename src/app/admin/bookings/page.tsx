@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { AdminDatabaseSetupHint, AdminSetupNotice } from "@/components/admin/setup-notice";
 import { formatPrice } from "@/lib/tours";
 
 type BookingRow = {
@@ -24,10 +25,9 @@ export default function BookingsPage() {
   useEffect(() => {
     void fetch("/api/admin/bookings")
       .then(async (response) => {
-        const data = (await response.json()) as { bookings?: BookingRow[]; error?: string };
+        const data = (await response.json().catch(() => ({}))) as { bookings?: BookingRow[]; error?: string };
         if (!response.ok) {
           setError(data.error || "Could not load bookings.");
-          setRows([]);
           return;
         }
         setRows(data.bookings ?? []);
@@ -42,8 +42,13 @@ export default function BookingsPage() {
       <p className="mt-2 max-w-xl text-muted-foreground">
         Confirmed after Razorpay verifies the payment. Amounts are in rupees.
       </p>
-      {error ? <p className="mt-8 text-sm text-destructive">{error}</p> : null}
-      {!rows ? (
+      {error ? (
+        <AdminSetupNotice error={error}>
+          This is not “no bookings yet.” Guests still pay on the public checkout.{" "}
+          <AdminDatabaseSetupHint />
+        </AdminSetupNotice>
+      ) : null}
+      {error ? null : !rows ? (
         <p className="mt-10 text-muted-foreground">Loading bookings…</p>
       ) : rows.length === 0 ? (
         <p className="mt-10 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">

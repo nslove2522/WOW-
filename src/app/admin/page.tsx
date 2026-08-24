@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { AdminDatabaseSetupHint, AdminSetupNotice } from "@/components/admin/setup-notice";
 import { Button } from "@/components/ui/button";
 
 type Summary = {
@@ -18,22 +19,47 @@ export default function AdminHomePage() {
 
   useEffect(() => {
     async function load() {
-      const [tripsRes, travelersRes, bookingsRes] = await Promise.all([
-        fetch("/api/admin/tours"),
-        fetch("/api/admin/travelers"),
-        fetch("/api/admin/bookings"),
-      ]);
-      const trips = (await tripsRes.json()) as { tours?: { published: boolean; price: number }[]; error?: string };
-      const travelers = (await travelersRes.json()) as { travelers?: unknown[]; error?: string };
-      const bookings = (await bookingsRes.json()) as { bookings?: { amount: number }[]; error?: string };
-      const error = trips.error || travelers.error || bookings.error;
-      setSummary({
-        trips: trips.tours?.length ?? 0,
-        published: trips.tours?.filter((item) => item.published).length ?? 0,
-        travelers: travelers.travelers?.length ?? 0,
-        bookings: bookings.bookings?.length ?? 0,
-        error,
-      });
+      try {
+        const [tripsRes, travelersRes, bookingsRes] = await Promise.all([
+          fetch("/api/admin/tours"),
+          fetch("/api/admin/travelers"),
+          fetch("/api/admin/bookings"),
+        ]);
+        const trips = (await tripsRes.json().catch(() => ({}))) as {
+          tours?: { published: boolean; price: number }[];
+          error?: string;
+        };
+        const travelers = (await travelersRes.json().catch(() => ({}))) as {
+          travelers?: unknown[];
+          error?: string;
+        };
+        const bookings = (await bookingsRes.json().catch(() => ({}))) as {
+          bookings?: { amount: number }[];
+          error?: string;
+        };
+        const error =
+          (!tripsRes.ok ? trips.error || "Could not load trips." : undefined) ||
+          (!travelersRes.ok ? travelers.error || "Could not load profiles." : undefined) ||
+          (!bookingsRes.ok ? bookings.error || "Could not load bookings." : undefined);
+        if (error) {
+          setSummary({ trips: 0, published: 0, travelers: 0, bookings: 0, error });
+          return;
+        }
+        setSummary({
+          trips: trips.tours?.length ?? 0,
+          published: trips.tours?.filter((item) => item.published).length ?? 0,
+          travelers: travelers.travelers?.length ?? 0,
+          bookings: bookings.bookings?.length ?? 0,
+        });
+      } catch {
+        setSummary({
+          trips: 0,
+          published: 0,
+          travelers: 0,
+          bookings: 0,
+          error: "Could not load owner desk numbers.",
+        });
+      }
     }
     void load();
   }, []);
@@ -50,7 +76,10 @@ export default function AdminHomePage() {
       {!summary ? (
         <p className="mt-10 text-muted-foreground">Loading your numbers…</p>
       ) : summary.error ? (
-        <p className="mt-10 rounded-xl bg-destructive/10 p-4 text-sm text-destructive">{summary.error}</p>
+        <AdminSetupNotice error={summary.error}>
+          These counts are not loaded yet — this is not “zero guests.” Guests still see the built-in
+          Seetharkundu trip on the public site. <AdminDatabaseSetupHint />
+        </AdminSetupNotice>
       ) : (
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Stat label="Trips on file" value={String(summary.trips)} />

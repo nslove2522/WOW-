@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { AdminDatabaseSetupHint, AdminSetupNotice } from "@/components/admin/setup-notice";
+
 type Traveler = {
   id: string;
   name: string;
@@ -20,10 +22,9 @@ export default function TravelersPage() {
   useEffect(() => {
     void fetch("/api/admin/travelers")
       .then(async (response) => {
-        const data = (await response.json()) as { travelers?: Traveler[]; error?: string };
+        const data = (await response.json().catch(() => ({}))) as { travelers?: Traveler[]; error?: string };
         if (!response.ok) {
           setError(data.error || "Could not load profiles.");
-          setPeople([]);
           return;
         }
         setPeople(data.travelers ?? []);
@@ -39,8 +40,13 @@ export default function TravelersPage() {
         Anyone who created an account on the booking portal appears here. You do not need the
         database screens for this list.
       </p>
-      {error ? <p className="mt-8 text-sm text-destructive">{error}</p> : null}
-      {!people ? (
+      {error ? (
+        <AdminSetupNotice error={error}>
+          This is not an empty guest list. Women can still register on the public site.{" "}
+          <AdminDatabaseSetupHint />
+        </AdminSetupNotice>
+      ) : null}
+      {error ? null : !people ? (
         <p className="mt-10 text-muted-foreground">Loading profiles…</p>
       ) : people.length === 0 ? (
         <p className="mt-10 rounded-xl border border-dashed border-border p-10 text-center text-muted-foreground">
