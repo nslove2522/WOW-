@@ -67,7 +67,7 @@ function SignInForm() {
         <p className="mt-2 text-center text-xs uppercase tracking-[0.2em] text-teal-800/80">
           {brand.tagline}
         </p>
-        <h1 className="mt-3 text-center font-heading text-4xl text-teal-950">
+        <h1 className="mt-3 text-center font-heading text-3xl text-teal-950 sm:text-4xl">
           Start in the open air
         </h1>
         <p className="mt-2 text-center text-sm leading-6 text-teal-900/70">
@@ -86,7 +86,7 @@ function SignInForm() {
               autoComplete="email"
               required
               placeholder="you@email.com"
-              className="h-11 border-teal-800/20 bg-white/80"
+              className="h-12 border-teal-800/20 bg-white/80"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
@@ -102,7 +102,7 @@ function SignInForm() {
                 autoComplete="current-password"
                 required
                 placeholder="Your password"
-                className="h-11 border-teal-800/20 bg-white/80 pr-10"
+                className="h-12 border-teal-800/20 bg-white/80 pr-10"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />

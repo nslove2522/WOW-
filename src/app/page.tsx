@@ -21,19 +21,19 @@ export default function HomePage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-black/15" />
-        <div className="relative mx-auto flex min-h-dvh w-full max-w-6xl flex-col justify-end px-4 pb-16 pt-24 text-white">
-          <div className="mb-6">
+        <div className="relative mx-auto flex min-h-dvh w-full max-w-6xl flex-col justify-end px-4 pb-10 pt-24 text-white sm:pb-16">
+          <div className="mb-5 sm:mb-6">
             <BrandLogo
               size={240}
               priority
               highlight
-              className="h-40 w-auto drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)] sm:h-52 md:h-60"
+              className="h-28 w-auto drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)] sm:h-40 md:h-60"
             />
           </div>
-          <p className="text-sm uppercase tracking-[0.2em] text-white/80">
+          <p className="text-xs uppercase tracking-[0.2em] text-white/80 sm:text-sm">
             {brand.tagline}
           </p>
-          <h1 className="mt-3 max-w-2xl font-heading text-4xl leading-tight sm:text-6xl">
+          <h1 className="mt-3 max-w-2xl font-heading text-3xl leading-tight sm:text-5xl md:text-6xl">
             Travel with women you have not met yet — on purpose.
           </h1>
           <p className="mt-4 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
@@ -41,10 +41,10 @@ export default function HomePage() {
             without a companion. You get a locked guest list, a local host, and
             a portal for bookings and payment.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
             <Button
               size="lg"
-              className="bg-white text-foreground hover:bg-white/90"
+              className="w-full bg-white text-foreground hover:bg-white/90 sm:w-auto"
               nativeButton={false}
               render={<Link href="/tours/seetharkundu-falls-kollengodu" />}
             >
@@ -53,7 +53,7 @@ export default function HomePage() {
             <Button
               size="lg"
               variant="outline"
-              className="border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"
+              className="w-full border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
               nativeButton={false}
               render={<Link href="/register" />}
             >
@@ -64,12 +64,12 @@ export default function HomePage() {
       </section>
 
       {trip ? (
-        <section className="mx-auto w-full max-w-6xl px-4 py-16">
+        <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:py-16">
           <p className="font-heading text-xl italic text-primary">Our next escape</p>
           <p className="mt-2 text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
             Women only · One day trip · {trip.nextDate}
           </p>
-          <h2 className="mt-3 font-heading text-3xl leading-tight sm:text-5xl">
+          <h2 className="mt-3 font-heading text-2xl leading-tight sm:text-5xl">
             Seetharkundu Falls, Kollengodu
           </h2>
           <p className="mt-3 max-w-2xl text-lg leading-8">
@@ -135,7 +135,7 @@ export default function HomePage() {
             .
           </p>
           <Button
-            className="mt-6"
+            className="mt-6 w-full sm:w-auto"
             size="lg"
             nativeButton={false}
             render={<Link href={`/tours/${trip.slug}`} />}

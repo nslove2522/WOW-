@@ -26,11 +26,11 @@ const steps = [
 
 export default function HowItWorksPage() {
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-16">
+    <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:py-16">
       <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">
         {brand.tagline}
       </p>
-      <h1 className="mt-2 font-heading text-4xl">How a trip is organized</h1>
+      <h1 className="mt-2 font-heading text-3xl sm:text-4xl">How a trip is organized</h1>
       <p className="mt-4 text-lg leading-8 text-muted-foreground">
         The site is built for women who want a hosted group without recruiting
         friends first. You meet the others on the trip, not in a chat that goes
@@ -49,7 +49,7 @@ export default function HowItWorksPage() {
           </li>
         ))}
       </ol>
-      <Button className="mt-12" nativeButton={false} render={<Link href="/tours" />}>
+      <Button className="mt-12 w-full sm:w-auto" nativeButton={false} render={<Link href="/tours" />}>
         See upcoming tours
       </Button>
     </div>

@@ -51,20 +51,20 @@ export function SiteHeader() {
 
   const actions = ready ? (
     user ? (
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/portal" />}>
+      <div className="flex w-full flex-col gap-2">
+        <Button variant="ghost" className="w-full justify-center" nativeButton={false} render={<Link href="/portal" />}>
           {user.name.split(" ")[0]}
         </Button>
-        <Button variant="outline" size="sm" onClick={() => void signOut()}>
+        <Button variant="outline" className="w-full" onClick={() => void signOut()}>
           Sign out
         </Button>
       </div>
     ) : (
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/sign-in" />}>
+      <div className="flex w-full flex-col gap-2">
+        <Button variant="ghost" className="w-full justify-center" nativeButton={false} render={<Link href="/sign-in" />}>
           Sign in
         </Button>
-        <Button size="sm" nativeButton={false} render={<Link href="/register" />}>
+        <Button className="w-full" nativeButton={false} render={<Link href="/register" />}>
           Register
         </Button>
       </div>
@@ -98,7 +98,7 @@ export function SiteHeader() {
             >
               <Menu className="size-4" />
             </SheetTrigger>
-            <SheetContent side="right" className="w-72">
+            <SheetContent side="right" className="w-[min(20rem,calc(100vw-1rem))]">
               <SheetHeader className="pr-10">
                 <SheetTitle className="flex items-center gap-3 text-left">
                   <BrandLogo size={56} highlight className="h-12 w-auto" />

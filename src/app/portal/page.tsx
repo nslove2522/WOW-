@@ -41,11 +41,11 @@ function PortalBody() {
         <p className="mt-3 text-muted-foreground">
           Bookings, receipts, and your traveler profile live here.
         </p>
-        <div className="mt-6 flex justify-center gap-3">
-          <Button nativeButton={false} render={<Link href="/sign-in?next=/portal" />}>
+        <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
+          <Button className="w-full sm:w-auto" nativeButton={false} render={<Link href="/sign-in?next=/portal" />}>
             Sign in
           </Button>
-          <Button variant="outline" nativeButton={false} render={<Link href="/register?next=/portal" />}>
+          <Button variant="outline" className="w-full sm:w-auto" nativeButton={false} render={<Link href="/register?next=/portal" />}>
             Register
           </Button>
         </div>
@@ -54,14 +54,14 @@ function PortalBody() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-12">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:py-12">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.16em] text-muted-foreground">Traveler portal</p>
-          <h1 className="mt-1 font-heading text-4xl">Hello, {user.name.split(" ")[0]}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">{user.email}</p>
+          <h1 className="mt-1 font-heading text-3xl sm:text-4xl">Hello, {user.name.split(" ")[0]}</h1>
+          <p className="mt-2 break-all text-sm text-muted-foreground">{user.email}</p>
         </div>
-        <Button variant="outline" onClick={() => { void signOut().then(() => router.push("/")); }}>
+        <Button variant="outline" className="w-full sm:w-auto" onClick={() => { void signOut().then(() => router.push("/")); }}>
           Sign out
         </Button>
       </div>
@@ -96,7 +96,7 @@ function PortalBody() {
             <div className="grid gap-4">
               {confirmed.map((booking) => (
                 <Card key={booking.id}>
-                  <CardHeader className="flex flex-row items-start justify-between gap-3">
+                  <CardHeader className="flex flex-col items-start gap-3 sm:flex-row sm:justify-between">
                     <div>
                       <CardTitle className="font-heading text-2xl">{booking.tourTitle}</CardTitle>
                       <p className="mt-1 text-sm text-muted-foreground">
@@ -111,16 +111,17 @@ function PortalBody() {
                       {booking.id} · {PAYMENT_LABELS[booking.paymentMode]} ·{" "}
                       {formatPrice(booking.amount)}
                     </p>
-                    <div className="flex gap-2">
+                    <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
                       <Button
                         variant="outline"
                         size="sm"
+                        className="w-full sm:w-auto"
                         nativeButton={false}
                         render={<Link href={`/tours/${booking.tourSlug}`} />}
                       >
                         Tour details
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => void cancel(booking.id)}>
+                      <Button variant="ghost" size="sm" className="w-full sm:w-auto" onClick={() => void cancel(booking.id)}>
                         Cancel
                       </Button>
                     </div>
@@ -201,7 +202,7 @@ function ProfileForm({
         <Input id="phone" required value={phone} onChange={(e) => setPhone(e.target.value)} />
       </div>
       <p className="text-sm text-muted-foreground">Email cannot be changed in this demo.</p>
-      <Button type="submit">Save profile</Button>
+      <Button type="submit" className="w-full sm:w-auto">Save profile</Button>
       {saved ? <p className="text-sm text-primary">Profile updated on this device.</p> : null}
     </form>
   );

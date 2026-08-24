@@ -23,9 +23,9 @@ import {
   validateNationalNumber,
 } from "@/lib/regions";
 
-const fieldClass = "h-11 border-teal-800/20 bg-white/80";
+const fieldClass = "h-12 min-h-12 border-teal-800/20 bg-white/80 text-base";
 const selectClass =
-  "h-11 w-full rounded-lg border border-teal-800/20 bg-white/80 px-2.5 text-sm text-teal-950 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+  "h-12 min-h-12 w-full touch-manipulation rounded-lg border border-teal-800/20 bg-white/80 px-3 text-base text-teal-950 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 function RegisterForm() {
   const router = useRouter();
@@ -118,11 +118,11 @@ function RegisterForm() {
 
       <div className="relative z-10 w-full max-w-xl rounded-2xl border border-white/45 bg-[color-mix(in_oklch,white_80%,oklch(0.93_0.05_165))] p-6 shadow-[0_24px_60px_rgba(12,70,55,0.28)] backdrop-blur-xl sm:p-8">
         <div className="flex flex-col items-center text-center">
-          <BrandLogo size={140} highlight className="h-28 w-auto" />
+          <BrandLogo size={140} highlight className="h-24 w-auto sm:h-28" />
           <p className="mt-2 text-xs uppercase tracking-[0.22em] text-teal-800/80">
             {brand.tagline}
           </p>
-          <h1 className="mt-3 font-heading text-4xl text-teal-950">Register</h1>
+          <h1 className="mt-3 font-heading text-3xl text-teal-950 sm:text-4xl">Register</h1>
           <p className="mt-2 max-w-sm text-sm leading-6 text-teal-900/70">
             Open air, green hills, and a seat on a women-only trip. One profile,
             then you book without repeating yourself.
@@ -236,14 +236,14 @@ function RegisterForm() {
             <Label htmlFor="phone" className="text-teal-950">
               Phone
             </Label>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <select
                 id="phone-country"
                 name="country"
                 required
                 value={countryIso}
                 onChange={(event) => onCountryChange(event.target.value)}
-                className={`${selectClass} w-[9.75rem] shrink-0 sm:w-[11.5rem]`}
+                className={`${selectClass} w-full sm:w-[11.5rem] sm:shrink-0`}
                 aria-label="Country"
                 autoComplete="tel-country-code"
               >

@@ -47,8 +47,8 @@ export default async function TourDetailPage({
               {tour.days === 1 ? "Limited slots" : `${tour.seatsLeft} seats left`}
             </Badge>
           </div>
-          <h1 className="mt-3 font-heading text-4xl sm:text-5xl">{tour.title}</h1>
-          <p className="mt-2 flex items-center gap-2 text-white/85">
+          <h1 className="mt-3 font-heading text-3xl leading-tight sm:text-5xl">{tour.title}</h1>
+          <p className="mt-2 flex items-start gap-2 text-sm text-white/85 sm:items-center sm:text-base">
             <MapPin className="size-4" />
             {tour.location}
           </p>
@@ -71,7 +71,7 @@ export default async function TourDetailPage({
         </div>
       ) : null}
 
-      <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 lg:grid-cols-[1fr_320px]">
+      <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-8 pb-28 sm:py-12 lg:grid-cols-[1fr_320px] lg:pb-12">
         <div className="space-y-10">
           <p className="text-lg leading-8 text-muted-foreground">{tour.description}</p>
           <section>
@@ -169,17 +169,34 @@ export default async function TourDetailPage({
             </li>
           </ul>
           <Button
-            className="mt-6 w-full"
+            className="mt-6 hidden w-full lg:inline-flex"
             size="lg"
             nativeButton={false}
             render={<Link href={`/tours/${tour.slug}/pay`} />}
           >
             Reserve and pay
           </Button>
-          <p className="mt-3 text-xs leading-5 text-muted-foreground">
+          <p className="mt-3 hidden text-xs leading-5 text-muted-foreground lg:block">
             You will sign in or register first. Card and UPI go through Razorpay.
           </p>
         </aside>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden">
+        <div className="mx-auto flex max-w-6xl items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium">{formatPrice(tour.price)} per traveler</p>
+            <p className="truncate text-xs text-muted-foreground">{tour.nextDate}</p>
+          </div>
+          <Button
+            size="lg"
+            className="shrink-0"
+            nativeButton={false}
+            render={<Link href={`/tours/${tour.slug}/pay`} />}
+          >
+            Reserve and pay
+          </Button>
+        </div>
       </div>
     </article>
   );

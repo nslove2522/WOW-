@@ -45,7 +45,7 @@ export function PhotoCarousel() {
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-6">
-      <div className="mb-5 flex items-end justify-between gap-4">
+      <div className="mb-5 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <h2 className="font-heading text-3xl">From the road</h2>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -57,6 +57,7 @@ export function PhotoCarousel() {
             type="button"
             variant="outline"
             size="icon"
+            className="size-11"
             aria-label="Previous photo"
             onClick={() => go(index - 1)}
           >
@@ -66,6 +67,7 @@ export function PhotoCarousel() {
             type="button"
             variant="outline"
             size="icon"
+            className="size-11"
             aria-label="Next photo"
             onClick={() => go(index + 1)}
           >
@@ -115,7 +117,7 @@ export function PhotoCarousel() {
             onClick={() => setIndex(i)}
             className={cn(
               "h-2 rounded-full transition-all",
-              i === index ? "w-7 bg-primary" : "w-2 bg-border hover:bg-muted-foreground/40",
+              i === index ? "h-3 w-8 bg-primary" : "h-3 w-3 bg-border hover:bg-muted-foreground/40",
             )}
           />
         ))}

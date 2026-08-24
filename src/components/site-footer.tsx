@@ -50,19 +50,19 @@ export function SiteFooter() {
         </div>
         <div
           className={cn(
-            "flex flex-wrap gap-12 text-sm",
+            "flex flex-wrap gap-8 text-sm sm:gap-12",
             authSurface ? "mt-10 justify-center" : "",
           )}
         >
           <div className="flex flex-col gap-2">
             <p className="font-medium text-foreground">Explore</p>
-            <Link href="/tours" className="text-muted-foreground hover:underline">
+            <Link href="/tours" className="min-h-10 py-1 text-muted-foreground hover:underline">
               Seetharkundu Falls
             </Link>
-            <Link href="/how-it-works" className="text-muted-foreground hover:underline">
+            <Link href="/how-it-works" className="min-h-10 py-1 text-muted-foreground hover:underline">
               How it works
             </Link>
-            <Link href="/register" className="text-muted-foreground hover:underline">
+            <Link href="/register" className="min-h-10 py-1 text-muted-foreground hover:underline">
               Create an account
             </Link>
           </div>
