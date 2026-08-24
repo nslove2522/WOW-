@@ -2,12 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand-logo";
+import { MediaImage } from "@/components/media-image";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/brand";
-import { formatDuration, formatPrice, getTour } from "@/lib/tours";
+import { getFeaturedTour } from "@/lib/catalog";
+import { formatDuration, formatPrice } from "@/lib/tours";
 
-export default function HomePage() {
-  const trip = getTour("seetharkundu-falls-kollengodu");
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const trip = await getFeaturedTour();
   const photos = trip?.gallery ?? [];
 
   return (
@@ -46,7 +50,7 @@ export default function HomePage() {
               size="lg"
               className="w-full bg-white text-foreground hover:bg-white/90 sm:w-auto"
               nativeButton={false}
-              render={<Link href="/tours/seetharkundu-falls-kollengodu" />}
+              render={<Link href={trip ? `/tours/${trip.slug}` : "/tours"} />}
             >
               See this trip
             </Button>
@@ -70,7 +74,7 @@ export default function HomePage() {
             Women only · One day trip · {trip.nextDate}
           </p>
           <h2 className="mt-3 font-heading text-2xl leading-tight sm:text-5xl">
-            Seetharkundu Falls, Kollengodu
+            {trip.title}
           </h2>
           <p className="mt-3 max-w-2xl text-lg leading-8">
             Waterfalls, viewpoints & many more spots to cover.
@@ -88,7 +92,7 @@ export default function HomePage() {
                 href={`/tours/${trip.slug}`}
                 className="relative block aspect-[3/4] overflow-hidden rounded-2xl"
               >
-                <Image
+                <MediaImage
                   src={photo.src}
                   alt={photo.alt}
                   fill

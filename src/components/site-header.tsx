@@ -73,7 +73,7 @@ export function SiteHeader() {
     <div className="h-8 w-28 animate-pulse rounded-md bg-muted" />
   );
 
-  if (pathname === "/register" || pathname === "/sign-in") {
+  if (pathname === "/register" || pathname === "/sign-in" || pathname.startsWith("/admin")) {
     return null;
   }
 

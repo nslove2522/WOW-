@@ -9,7 +9,7 @@ import {
   razorpayKeyId,
   signOrderTicket,
 } from "@/lib/razorpay";
-import { getTour } from "@/lib/tours";
+import { getPublishedTour } from "@/lib/catalog";
 
 export const runtime = "nodejs";
 
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const tour = typeof body.slug === "string" ? getTour(body.slug) : undefined;
+  const tour = typeof body.slug === "string" ? await getPublishedTour(body.slug) : undefined;
   const seats = Number(body.seats);
   if (!tour) {
     return NextResponse.json({ error: "Tour not found." }, { status: 404 });

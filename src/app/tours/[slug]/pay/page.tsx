@@ -15,7 +15,7 @@ import {
   loadRazorpayCheckout,
   openRazorpayCheckout,
 } from "@/lib/razorpay-checkout";
-import { formatPrice, getTour } from "@/lib/tours";
+import { formatPrice, type Tour } from "@/lib/tours";
 import type { PaymentMode } from "@/lib/types";
 
 const modes: { id: "card" | "upi"; title: string; hint: string }[] = [
@@ -50,9 +50,9 @@ type VerifyPayload = {
 
 export default function PayPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const tour = getTour(slug);
   const router = useRouter();
   const { user, ready, payForTour } = useAuth();
+  const [tour, setTour] = useState<Tour | null | undefined>(undefined);
   const [gateway, setGateway] = useState<Gateway>(null);
   const [seats, setSeats] = useState(1);
   const [mode, setMode] = useState<"card" | "upi">("upi");
@@ -64,6 +64,18 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
 
   useEffect(() => {
     let cancelled = false;
+    void fetch(`/api/catalog/${slug}`)
+      .then(async (response) => {
+        if (!response.ok) return null;
+        const data = (await response.json()) as { tour?: Tour };
+        return data.tour ?? null;
+      })
+      .then((loaded) => {
+        if (!cancelled) setTour(loaded);
+      })
+      .catch(() => {
+        if (!cancelled) setTour(null);
+      });
     void fetch("/api/razorpay/config")
       .then((response) => response.json() as Promise<{ enabled?: boolean }>)
       .then((data) => {
@@ -75,7 +87,15 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [slug]);
+
+  if (tour === undefined) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-20 text-center text-muted-foreground">
+        Loading checkout…
+      </div>
+    );
+  }
 
   if (!tour) {
     return (
@@ -143,7 +163,7 @@ export default function PayPage({ params }: { params: Promise<{ slug: string }> 
       return;
     }
 
-    const selected = getTour(slug);
+    const selected = tour;
     if (!selected) {
       setError("Tour is no longer listed.");
       return;

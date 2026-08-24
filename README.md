@@ -68,6 +68,25 @@ Without Supabase keys, a demo traveler still works on this device only:
 - Email: `aisha@wingsofwomen.test`
 - Password: `wander2026`
 
+
+## Owner desk (no backend knowledge needed)
+
+The public site reads trip details from Supabase. The owner updates them on a separate **owner desk** at `/admin` — same website, different door.
+
+1. Run the SQL in [`supabase/schema.sql`](supabase/schema.sql) (safe to run again). That creates the `tours` table, seeds Seetharkundu Falls, and a public photo bucket.
+2. In Supabase → Project Settings → API, copy the **service_role** key. This key can read every profile and booking. Keep it server-only.
+3. Add these host variables (Vercel Production + Preview), then **Redeploy**:
+
+- `ADMIN_PASSWORD` — the password the owner types at `/admin/login`
+- `SUPABASE_SERVICE_ROLE_KEY` — service_role secret (never `NEXT_PUBLIC_`)
+
+4. Bookmark `https://your-domain/admin`. Sign in with `ADMIN_PASSWORD`.
+5. Use **Trips** to change the name, date, amount, photos, and whether the trip is live. **Registered women** and **Bookings** show who signed up and who paid.
+
+When a trip is saved and marked live, the public catalog, trip page, and Razorpay amount update from that record. No code change is required.
+
+If those extra variables are missing, travelers still see the built-in Seetharkundu trip. The owner desk will explain what to add.
+
 ## Stack
 
 Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, Supabase Auth + Postgres, Razorpay Checkout.

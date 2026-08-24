@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Users } from "lucide-react";
 
+import { MediaImage } from "@/components/media-image";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatPrice, type Tour } from "@/lib/tours";
@@ -11,7 +11,7 @@ export function TourCard({ tour }: { tour: Tour }) {
     <Link href={`/tours/${tour.slug}`} className="group block h-full">
       <Card className="h-full overflow-hidden py-0 transition-shadow group-hover:shadow-md">
         <div className="relative aspect-[16/10] overflow-hidden">
-          <Image
+          <MediaImage
             src={tour.image}
             alt={tour.imageAlt}
             fill

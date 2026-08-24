@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { MediaImage } from "@/components/media-image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, MapPin, Shield, Users } from "lucide-react";
@@ -7,15 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { brand } from "@/lib/brand";
-import { formatDuration, formatPrice, getTour, tours } from "@/lib/tours";
+import { getPublishedTour } from "@/lib/catalog";
+import { formatDuration, formatPrice } from "@/lib/tours";
 
-export function generateStaticParams() {
-  return tours.map((tour) => ({ slug: tour.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const tour = getTour(slug);
+  const tour = await getPublishedTour(slug);
   return { title: tour?.title ?? "Tour" };
 }
 
@@ -25,13 +24,13 @@ export default async function TourDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const tour = getTour(slug);
+  const tour = await getPublishedTour(slug);
   if (!tour) notFound();
 
   return (
     <article>
       <div className="relative h-[46vh] min-h-72 w-full">
-        <Image
+        <MediaImage
           src={tour.image}
           alt={tour.imageAlt}
           fill
@@ -44,7 +43,7 @@ export default async function TourDetailPage({
             <Badge variant="secondary">{tour.region}</Badge>
             <Badge>{tour.difficulty}</Badge>
             <Badge variant="outline" className="border-white/40 text-white">
-              {tour.days === 1 ? "Limited slots" : `${tour.seatsLeft} seats left`}
+              {tour.availabilityLabel || (tour.days === 1 ? "Limited slots" : `${tour.seatsLeft} seats left`)}
             </Badge>
           </div>
           <h1 className="mt-3 font-heading text-3xl leading-tight sm:text-5xl">{tour.title}</h1>
@@ -59,7 +58,7 @@ export default async function TourDetailPage({
         <div className="mx-auto grid w-full max-w-6xl gap-3 px-4 pt-8 sm:grid-cols-2">
           {tour.gallery.map((photo) => (
             <div key={photo.src} className="relative aspect-[3/4] overflow-hidden rounded-2xl">
-              <Image
+              <MediaImage
                 src={photo.src}
                 alt={photo.alt}
                 fill

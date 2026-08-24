@@ -10,6 +10,9 @@ import { cn } from "@/lib/utils";
 export function SiteFooter() {
   const pathname = usePathname();
   const authSurface = pathname === "/register" || pathname === "/sign-in";
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <footer
@@ -57,7 +60,7 @@ export function SiteFooter() {
           <div className="flex flex-col gap-2">
             <p className="font-medium text-foreground">Explore</p>
             <Link href="/tours" className="min-h-10 py-1 text-muted-foreground hover:underline">
-              Seetharkundu Falls
+              Upcoming trips
             </Link>
             <Link href="/how-it-works" className="min-h-10 py-1 text-muted-foreground hover:underline">
               How it works

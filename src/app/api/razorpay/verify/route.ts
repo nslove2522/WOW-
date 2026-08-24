@@ -10,7 +10,7 @@ import {
   razorpayErrorMessage,
   verifyCheckoutSignature,
 } from "@/lib/razorpay";
-import { getTour } from "@/lib/tours";
+import { getPublishedTour } from "@/lib/catalog";
 import { saveServerBooking } from "@/lib/supabase/server-booking";
 
 export const runtime = "nodejs";
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing Razorpay payment fields." }, { status: 400 });
   }
 
-  const tour = getTour(slug);
+  const tour = await getPublishedTour(slug);
   if (!tour || !Number.isInteger(seats) || seats < 1) {
     return NextResponse.json({ error: "Trip details for this payment are invalid." }, { status: 400 });
   }

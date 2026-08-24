@@ -46,5 +46,27 @@ export async function saveServerBooking(input: {
     )
     .single();
   if (error) throw new Error(error.message);
+
+  try {
+    const { createSupabaseAdminClient, isAdminDatabaseReady } = await import("@/lib/supabase/admin");
+    if (isAdminDatabaseReady()) {
+      const admin = createSupabaseAdminClient();
+      const { data: tour } = await admin
+        .from("tours")
+        .select("id, seats_left")
+        .eq("slug", input.tourSlug)
+        .maybeSingle();
+      if (tour) {
+        await admin
+          .from("tours")
+          .update({ seats_left: Math.max(0, Number(tour.seats_left) - input.seats) })
+          .eq("id", tour.id);
+      }
+    }
+  } catch {
+    // Booking is saved even if the seat counter cannot be updated.
+  }
+
   return data;
 }
+
