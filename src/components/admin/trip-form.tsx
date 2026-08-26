@@ -19,6 +19,36 @@ function lines(value: string) {
     .filter(Boolean);
 }
 
+// The catalog stores the date as the friendly string guests read (e.g.
+// "Saturday, 22 August 2026"). These helpers let the form use a calendar
+// picker while still saving that friendly string.
+function friendlyDate(iso: string) {
+  if (!iso) return "";
+  const date = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function toIsoDate(value: string) {
+  if (!value) return "";
+  // Accept the friendly string too (strip a leading "Weekday, " if present).
+  for (const candidate of [value, value.replace(/^[^,]*,\s*/, "")]) {
+    const date = new Date(candidate);
+    if (!Number.isNaN(date.getTime())) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+  }
+  return "";
+}
+
 export function emptyTrip(): TourRecord {
   return {
     id: "",
@@ -172,13 +202,16 @@ export function TripForm({ initial }: { initial: TourRecord }) {
           </select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="nextDate">Upcoming date (as guests should read it)</Label>
+          <Label htmlFor="nextDate">Upcoming date</Label>
           <Input
             id="nextDate"
-            value={trip.nextDate}
-            onChange={(event) => update("nextDate", event.target.value)}
-            placeholder="Saturday, 22 August 2026"
+            type="date"
+            value={toIsoDate(trip.nextDate)}
+            onChange={(event) => update("nextDate", friendlyDate(event.target.value))}
           />
+          <p className="text-xs text-muted-foreground">
+            {trip.nextDate ? `Guests see: ${trip.nextDate}` : "Pick a date from the calendar."}
+          </p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="availability">Availability tag</Label>
@@ -204,6 +237,28 @@ export function TripForm({ initial }: { initial: TourRecord }) {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
+            <Label htmlFor="groupSize">Group size</Label>
+            <Input
+              id="groupSize"
+              type="number"
+              min={1}
+              value={trip.groupSize}
+              onChange={(event) => {
+                const groupSize = Number(event.target.value);
+                setTrip((current) => {
+                  // Keep "seats left" in step with the total while it hasn't been
+                  // hand-adjusted (new trip, or seats still equal the old total).
+                  const inSync = isNew || current.seatsLeft === current.groupSize;
+                  return {
+                    ...current,
+                    groupSize,
+                    seatsLeft: inSync ? groupSize : current.seatsLeft,
+                  };
+                });
+              }}
+            />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="seatsLeft">Seats left</Label>
             <Input
               id="seatsLeft"
@@ -213,17 +268,11 @@ export function TripForm({ initial }: { initial: TourRecord }) {
               onChange={(event) => update("seatsLeft", Number(event.target.value))}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="groupSize">Group size</Label>
-            <Input
-              id="groupSize"
-              type="number"
-              min={1}
-              value={trip.groupSize}
-              onChange={(event) => update("groupSize", Number(event.target.value))}
-            />
-          </div>
         </div>
+        <p className="-mt-2 text-xs text-muted-foreground sm:col-span-2">
+          Seats left starts from the group size and drops automatically each time a
+          traveler books and pays.
+        </p>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
             <Label htmlFor="days">Days</Label>
