@@ -1,0 +1,115 @@
+diff --git a/src/app/admin/trips/new/page.tsx b/src/app/admin/trips/new/page.tsx
+index e0b52d9..b512887 100644
+--- a/src/app/admin/trips/new/page.tsx
++++ b/src/app/admin/trips/new/page.tsx
+@@ -1,4 +1,5 @@
+-import { TripForm, emptyTrip } from "@/components/admin/trip-form";
++import { TripForm } from "@/components/admin/trip-form";
++import { emptyTrip } from "@/lib/tour-defaults";
+ 
+ export const metadata = { title: "New trip" };
+ 
+diff --git a/src/components/admin/trip-form.tsx b/src/components/admin/trip-form.tsx
+index 9daf2a2..94e63c2 100644
+--- a/src/components/admin/trip-form.tsx
++++ b/src/components/admin/trip-form.tsx
+@@ -12,6 +12,8 @@ import type { TourRecord } from "@/lib/catalog";
+ import { slugFromTitle } from "@/lib/slug";
+ import type { Difficulty } from "@/lib/tours";
+ 
++export { emptyTrip } from "@/lib/tour-defaults";
++
+ function lines(value: string) {
+   return value
+     .split("\n")
+@@ -19,43 +21,6 @@ function lines(value: string) {
+     .filter(Boolean);
+ }
+ 
+-export function emptyTrip(): TourRecord {
+-  return {
+-    id: "",
+-    slug: "",
+-    title: "",
+-    location: "",
+-    region: "India",
+-    tagline: "Women only. Strangers today, sisters forever.",
+-    description: "",
+-    image: "",
+-    imageAlt: "",
+-    gallery: [
+-      { src: "", alt: "" },
+-      { src: "", alt: "" },
+-    ],
+-    days: 1,
+-    nights: 0,
+-    price: 0,
+-    currency: "INR",
+-    difficulty: "Easy",
+-    groupSize: 12,
+-    seatsLeft: 12,
+-    nextDate: "",
+-    host: {
+-      name: "Wings of Women",
+-      years: 1,
+-      bio: "DM @wings._ofwomen or WhatsApp 9489029797. Limited slots. Itinerary details are shared personally.",
+-    },
+-    highlights: [],
+-    inclusions: [],
+-    exclusions: [],
+-    itinerary: [{ day: 1, title: "", detail: "" }],
+-    availabilityLabel: "Limited slots",
+-    published: true,
+-  };
+-}
+-
+ export function TripForm({ initial }: { initial: TourRecord }) {
+   const router = useRouter();
+   const isNew = !initial.id || initial.id.startsWith("fallback-");
+diff --git a/src/lib/tour-defaults.ts b/src/lib/tour-defaults.ts
+new file mode 100644
+index 0000000..06b1f2f
+--- /dev/null
++++ b/src/lib/tour-defaults.ts
+@@ -0,0 +1,41 @@
++import type { TourRecord } from "@/lib/catalog";
++
++// Blank trip used to seed the "new trip" form. Kept in a non-client module so
++// both the server page and the client form can import it without crossing the
++// server/client boundary.
++export function emptyTrip(): TourRecord {
++  return {
++    id: "",
++    slug: "",
++    title: "",
++    location: "",
++    region: "India",
++    tagline: "Women only. Strangers today, sisters forever.",
++    description: "",
++    image: "",
++    imageAlt: "",
++    gallery: [
++      { src: "", alt: "" },
++      { src: "", alt: "" },
++    ],
++    days: 1,
++    nights: 0,
++    price: 0,
++    currency: "INR",
++    difficulty: "Easy",
++    groupSize: 12,
++    seatsLeft: 12,
++    nextDate: "",
++    host: {
++      name: "Wings of Women",
++      years: 1,
++      bio: "DM @wings._ofwomen or WhatsApp 9489029797. Limited slots. Itinerary details are shared personally.",
++    },
++    highlights: [],
++    inclusions: [],
++    exclusions: [],
++    itinerary: [{ day: 1, title: "", detail: "" }],
++    availabilityLabel: "Limited slots",
++    published: true,
++  };
++}
