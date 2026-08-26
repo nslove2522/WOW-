@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { TourRecord } from "@/lib/catalog";
+import { COUNTRIES } from "@/lib/regions";
 import { slugFromTitle } from "@/lib/slug";
 import type { Difficulty } from "@/lib/tours";
 
@@ -181,12 +182,21 @@ export function TripForm({ initial }: { initial: TourRecord }) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="region">Country / region tag</Label>
-          <Input
+          <select
             id="region"
             value={trip.region}
             onChange={(event) => update("region", event.target.value)}
-            placeholder="India"
-          />
+            className="h-11 w-full rounded-lg border border-input bg-background px-3 text-base"
+          >
+            {trip.region && !COUNTRIES.some((country) => country.name === trip.region) ? (
+              <option value={trip.region}>{trip.region}</option>
+            ) : null}
+            {COUNTRIES.map((country) => (
+              <option key={country.iso} value={country.name}>
+                {country.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="space-y-2">
           <Label htmlFor="difficulty">Difficulty tag</Label>
